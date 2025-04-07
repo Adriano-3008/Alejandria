@@ -1,0 +1,1183 @@
+package Alpha;
+
+import java.io.*; // Import necesario para trabajar con archivos y flujos de entrada/salida de datos (I/O)
+import java.nio.file.*; // Import necesario para trabajar con archivos CSV y Paths
+import java.util.*; // Import necesario para trabajar con colecciones y Scanner
+
+class Productos implements Serializable { // Clase para representar los productos en el inventario y sus atributos (nombre, categoría, cantidad y precio)
+    private static final long serialVersionUID = 1L; // Número de versión de la clase para serialización
+    private String nombre; 
+    private String categoria; 
+    private int cantidad; 
+    private double precio; 
+
+    public Productos(String nombre, String categoria, int cantidad, double precio) { // Constructor de la clase Productos
+        this.nombre = nombre; 
+        this.categoria = categoria; 
+        this.cantidad = cantidad; 
+        this.precio = precio; 
+    }
+    // Métodos getter y setter para los atributos de la clase Productos
+    public String getNombre() { return nombre; } 
+    public String getCategoria() { return categoria; } 
+    public int getCantidad() { return cantidad; } 
+    public void setCantidad(int cantidad) { this.cantidad = cantidad; } 
+    public double getPrecio() { return precio; } 
+    public void setPrecio(double precio) { this.precio = precio; } 
+
+
+ }
+
+
+
+
+class Proveedor implements Serializable{ // Clase para representar un proveedor
+    private static final long serialVersionUID = 1L;
+    private String nombre;
+    private String contacto;
+    private String productosSuministrados;
+
+    public Proveedor(String nombre, String contacto, String productosSuministrados) { // Constructor de la clase Proveedor
+        this.nombre = nombre;
+        this.contacto = contacto;
+        this.productosSuministrados = productosSuministrados;
+    }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getContacto() { return contacto; }
+    public void setContacto(String contacto) { this.contacto = contacto; }
+
+    public String getProductosSuministrados() { return productosSuministrados; }
+    public void setProductosSuministrados(String productosSuministrados) { this.productosSuministrados = productosSuministrados; }
+
+    @Override
+    public String toString() {
+        return String.format("Proveedor: %s | Contacto: %s | Productos: %s", nombre, contacto, productosSuministrados);
+    }
+}
+
+
+
+
+class ControlProveedores { // Clase para controlar los proveedores y sus operaciones (agregar, modificar, eliminar, listar, etc.)
+    private final File archivoProveedores = new File("Alpha/Archivo_Proyecto/proveedores.dat"); // Ruta del archivo para almacenar los proveedores
+    private List<Proveedor> listaProveedores = new ArrayList<>(); // Lista para almacenar los proveedores
+
+    public ControlProveedores() { // Constructor de la clase ControlProveedores
+        cargarProveedores();
+    }
+
+    public void agregarProveedor(Scanner scanner) { // Método para agregar un nuevo proveedor
+        System.out.println("\n=== REGISTRAR NUEVO PROVEEDOR ===");
+        System.out.print("Ingrese el nombre del proveedor: ");
+        String nombre = Validaciones.leerTextoNoVacio(scanner, "El nombre no puede estar vacío.");
+        System.out.print("Ingrese el contacto del proveedor: ");
+        String contacto = Validaciones.leerTextoNoVacio(scanner, "El contacto no puede estar vacío.");
+        System.out.print("Ingrese los productos suministrados por el proveedor: ");
+        String productos = Validaciones.leerTextoNoVacio(scanner, "Los productos no pueden estar vacíos.");
+
+        Proveedor nuevoProveedor = new Proveedor(nombre, contacto, productos);
+        listaProveedores.add(nuevoProveedor);
+        guardarProveedores();
+        System.out.println("Proveedor registrado exitosamente.");
+    }
+
+    public void listarProveedores() { // Método para listar los proveedores registrados
+        System.out.println("\n=== LISTA DE PROVEEDORES ===");
+        if (listaProveedores.isEmpty()) {
+            System.out.println("No hay proveedores registrados.");
+            return;
+        }
+        for (Proveedor proveedor : listaProveedores) {
+            System.out.println(proveedor);
+        }
+    }
+
+    public void mostrarProveedores() {
+        listarProveedores();
+    }
+
+    public void modificarProveedor(Scanner scanner) { // Método para modificar un proveedor existente
+        System.out.println("\n=== MODIFICAR PROVEEDOR ===");
+        listarProveedores();
+        System.out.print("Ingrese el nombre del proveedor que desea modificar: ");
+        String nombre = scanner.nextLine();
+
+        Proveedor proveedor = buscarProveedor(nombre);
+        if (proveedor == null) {
+            System.out.println("Proveedor no encontrado.");
+            return;
+        }
+
+        System.out.print("Ingrese el nuevo contacto (deje vacío para no cambiar): ");
+        String nuevoContacto = scanner.nextLine();
+        if (!nuevoContacto.isEmpty()) {
+            proveedor.setContacto(nuevoContacto);
+        }
+
+        System.out.print("Ingrese los nuevos productos suministrados (deje vacío para no cambiar): ");
+        String nuevosProductos = scanner.nextLine();
+        if (!nuevosProductos.isEmpty()) {
+            proveedor.setProductosSuministrados(nuevosProductos);
+        }
+
+        guardarProveedores();
+        System.out.println("Proveedor modificado exitosamente.");
+    }
+
+    public void eliminarProveedor(Scanner scanner) { // Método para eliminar un proveedor existente
+        System.out.println("\n=== ELIMINAR PROVEEDOR ===");
+        listarProveedores();
+        System.out.print("Ingrese el nombre del proveedor que desea eliminar: ");
+        String nombre = scanner.nextLine();
+
+        Proveedor proveedor = buscarProveedor(nombre);
+        if (proveedor != null) {
+            listaProveedores.remove(proveedor);
+            guardarProveedores();
+            System.out.println("Proveedor eliminado exitosamente.");
+        } else {
+            System.out.println("Proveedor no encontrado.");
+        }
+    }
+
+    public Proveedor buscarProveedor(String nombre) { // Método para buscar un proveedor por su nombre en la lista de proveedores registrados y devolverlo si se encuentra
+        return listaProveedores.stream()
+                .filter(p -> p.getNombre().equalsIgnoreCase(nombre))
+                .findFirst()
+                .orElse(null);
+    }
+    @SuppressWarnings("unchecked") //Para evitar advertencias de compilación de tipos en la conversión de objetos a Map<String, List<Productos>>
+    public void cargarProveedores() { // Método para cargar los proveedores desde el archivo de proveedores
+        if (!archivoProveedores.exists()) {
+            return;
+        }
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoProveedores))) { 
+            listaProveedores = (List<Proveedor>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al cargar los proveedores: " + e.getMessage());
+        }
+    }
+
+    public void guardarProveedores() { // Método para guardar los proveedores en el archivo de proveedores
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoProveedores))) {
+            oos.writeObject(listaProveedores);
+        } catch (IOException e) {
+            System.out.println("Error al guardar los proveedores: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+class Login { // Clase para manejar el inicio de sesión de los usuarios y sus operaciones (iniciar sesión, registrar usuario, borrar usuario, etc.)
+
+    private final File archivoUsuarios = new File("Alpha/Archivo_Proyecto/usuarios.dat"); // Ruta del archivo para almacenar los usuarios y contraseñas
+    private Map<String, String> usuarios = new HashMap<>(); // Mapa para almacenar los usuarios y sus contraseñas
+    private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();  // Mapa para almacenar los usuarios y sus roles (administrador o normal)
+
+    public Login() {// Constructor de la clase Login
+        cargarUsuarios(); // Cargar los usuarios y contraseñas desde el archivo
+    }
+
+    
+    public String iniciarSesion(Scanner scanner) { // Método para iniciar sesión en el sistema
+        while (true) {
+            System.out.println("\n=== LOGIN ===");
+            System.out.print("Ingrese su nombre de usuario: ");
+            String usuario = scanner.nextLine();
+            System.out.print("Ingrese su contraseña: ");
+            String contrasena = scanner.nextLine();
+
+            if (usuarios.containsKey(usuario) && usuarios.get(usuario).equals(contrasena)) { 
+                if (jerarquiaUsuarios.getOrDefault(usuario, false)) {
+                    System.out.println("Has iniciado sesión como administrador.");
+                } else {
+                    System.out.println("¡Bienvenido, " + usuario + "!");
+                }
+                return usuario; 
+            } else {
+                System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
+            }
+        }
+    }
+
+    
+    public void registrarUsuario(Scanner scanner) { // Método para registrar un nuevo usuario en el sistema
+        System.out.println("\n=== REGISTRO DE NUEVO USUARIO ===");
+        System.out.print("Ingrese un nombre de usuario: ");
+        String usuario = scanner.nextLine();
+
+        if (usuarios.containsKey(usuario)) {
+            System.out.println("El usuario ya existe. Intente con otro nombre.");
+            return;
+        }
+
+        System.out.print("Ingrese una contraseña: ");
+        String contrasena = scanner.nextLine();
+
+        System.out.print("¿Desea establecer esta cuenta como administrador? (s/n): ");
+        String respuesta = scanner.nextLine();
+
+        boolean esAdmin = false;
+        if (respuesta.equalsIgnoreCase("s")) {
+            System.out.print("Ingrese la contraseña de administrador: ");
+            String credencialesAdmin = scanner.nextLine();
+            if ("admin2025".equals(credencialesAdmin)) {
+                esAdmin = true;
+                System.out.println("Cuenta registrada como administrador.");
+            } else {
+                System.out.println("Contraseña de administrador incorrecta. La cuenta será registrada como usuario normal.");
+            }
+        }
+
+        usuarios.put(usuario, contrasena);
+        jerarquiaUsuarios.put(usuario, esAdmin);
+        guardarUsuarios(); 
+        System.out.println("Usuario registrado exitosamente.");
+    }
+
+
+    public void borrarUsuario(Scanner scanner) { // Método para borrar un usuario existente del sistema
+        System.out.print("Ingrese su nombre de usuario administrador: ");
+        String usuarioAdmin = scanner.nextLine();
+        System.out.print("Ingrese su contraseña: ");
+        String contrasenaAdmin = scanner.nextLine();
+    
+        // Verificar si las credenciales son válidas
+        if (!usuarios.containsKey(usuarioAdmin) || !usuarios.get(usuarioAdmin).equals(contrasenaAdmin) || !esUsuarioAdmin(usuarioAdmin)) {
+            System.out.println("Credenciales de administrador incorrectas. No se puede borrar usuarios.");
+            return;
+        }
+    
+        System.out.print("Ingrese el nombre del usuario que desea borrar: ");
+        String usuarioABorrar = scanner.nextLine();
+    
+        if (usuarios.containsKey(usuarioABorrar)) {
+            usuarios.remove(usuarioABorrar);
+            guardarUsuarios();
+            System.out.println("Usuario '" + usuarioABorrar + "' borrado correctamente.");
+        } else {
+            System.out.println("El usuario especificado no existe.");
+        }
+    }
+
+    @SuppressWarnings("unchecked") //Para evitar advertencias de compilación de tipos en la conversión de objetos a Map<String, String>
+    public void cargarUsuarios() { // Método para cargar los usuarios y contraseñas desde el archivo de usuarios
+        if (!archivoUsuarios.exists()) {
+            try {
+                archivoUsuarios.getParentFile().mkdirs(); 
+                archivoUsuarios.createNewFile(); 
+                System.out.println("El archivo de usuarios no existía. Se ha creado un nuevo archivo en: " + archivoUsuarios.getAbsolutePath());
+            } catch (IOException e) {
+                System.out.println("Error al crear el archivo de usuarios: " + e.getMessage());
+            }
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoUsuarios))) {
+            usuarios = (Map<String, String>) ois.readObject();
+            jerarquiaUsuarios = (Map<String, Boolean>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al cargar los usuarios: " + e.getMessage());
+        }
+    }
+
+    
+    public void guardarUsuarios() { // Método para guardar los usuarios y contraseñas en el archivo
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoUsuarios))) {
+            oos.writeObject(usuarios);
+            oos.writeObject(jerarquiaUsuarios);
+        } catch (IOException e) {
+            System.out.println("Error al guardar los usuarios: " + e.getMessage());
+        }
+    }
+
+    
+    public String manejarLogin(Scanner scanner) { // Método para manejar el proceso de inicio de sesión y registro de usuarios
+        while (true) {
+            System.out.println("\n=== SISTEMA DE LOGIN ===");
+            System.out.println("1. Iniciar sesión");
+            System.out.println("2. Registrar nuevo usuario");
+            System.out.println("3. Ver usuarios registrados"); // Nueva ubicación de esta opción
+            System.out.println("4. Salir del programa");
+            System.out.print("Seleccione una opción: ");
+            String opcion = scanner.nextLine();
+
+            switch (opcion) {
+                case "1":
+                    return iniciarSesion(scanner); 
+                case "2":
+                    registrarUsuario(scanner);
+                    break;
+                case "3":
+                    manejarUsuariosRegistrados(scanner); // Nueva opción para manejar usuarios registrados
+                    break;
+                case "4":
+                    System.out.println("Saliendo del programa... ¡Hasta luego!");
+                    System.exit(0); 
+                default:
+                    System.out.println("Opción no válida. Intente nuevamente.");
+            }
+        }
+    }
+
+    public void manejarUsuariosRegistrados(Scanner scanner) { // Método para manejar las opciones relacionadas con usuarios registrados
+        System.out.println("\n=== USUARIOS REGISTRADOS ===");
+        if (usuarios.isEmpty()) {
+            System.out.println("No hay usuarios registrados.");
+            return;
+        }
+
+        for (var entry : usuarios.entrySet()) {
+            String tipo = jerarquiaUsuarios.getOrDefault(entry.getKey(), false) ? "Administrador" : "Normal";
+            System.out.printf("Usuario: %s | Tipo: %s\n", entry.getKey(), tipo);
+        }
+
+        System.out.println("\n1. Borrar usuario");
+        System.out.println("2. Volver al menú principal");
+        System.out.print("Seleccione una opción: ");
+        String opcion = scanner.nextLine();
+
+        switch (opcion) {
+            case "1":
+                borrarUsuario(scanner); // Llamar al método para borrar usuario
+                break;
+            case "2":
+                System.out.println("Volviendo al menú principal...");
+                break;
+            default:
+                System.out.println("Opción no válida. Intente nuevamente.");
+        }
+    }
+
+    public void verUsuariosRegistrados() { // Método para mostrar los usuarios registrados en el sistema
+        System.out.println("\n=== USUARIOS REGISTRADOS ===");
+        if (usuarios.isEmpty()) {
+            System.out.println("No hay usuarios registrados.");
+            return;
+        }
+
+        for (var entry : usuarios.entrySet()) {
+            String tipo = jerarquiaUsuarios.getOrDefault(entry.getKey(), false) ? "Administrador" : "Normal";
+            System.out.printf("Usuario: %s | Contraseña: %s | Tipo: %s\n", entry.getKey(), entry.getValue(), tipo);
+        }
+    }
+
+    public boolean esUsuarioAdmin(String usuario) { // Método para verificar si un usuario es administrador
+        return jerarquiaUsuarios.getOrDefault(usuario, false);
+    }
+}
+
+
+
+
+class ControlStock { // Clase para controlar el inventario de productos y sus operaciones (agregar, modificar, eliminar, buscar, etc.)
+    private Map<String, List<Productos>> productosPorCategoria = new HashMap<>();
+    private alertaStock alerta = new alertaStock();
+    private ArchivoCSV archivoCSV = new ArchivoCSV();
+
+    public void agregarProducto(Productos producto) {
+        productosPorCategoria.computeIfAbsent(producto.getCategoria(), k -> new ArrayList<>()).add(producto);
+    
+        // Registrar el ingreso
+        String detalle = "Ingreso inicial: " + producto.getCantidad() + " unidades.";
+        ReporteDeInventario reporte = new ReporteDeInventario();
+        reporte.registrarCambio("Agregar Producto", producto.getCategoria(), producto.getNombre(), detalle);
+    
+        // Verificar stock bajo solo si es necesario
+        if (producto.getCantidad() < alertaStock.LIMITE_STOCK_BAJO) {
+            alerta.verificarStockBajo(productosPorCategoria);
+        }
+    }
+
+    public boolean existeCategoria(String categoria) { // Método para verificar si una categoría ya existe en el inventario
+        return productosPorCategoria.containsKey(categoria);
+    }
+
+    public void agregarCategoria(String categoria) { // Método para agregar una nueva categoría al inventario
+        if (existeCategoria(categoria)) {
+            System.out.println("La categoría '" + categoria + "' ya existe.");
+        } else {
+            productosPorCategoria.put(categoria, new ArrayList<>());
+            System.out.println("Categoría '" + categoria + "' creada correctamente.");
+        }
+    }
+
+    
+    public void mostrarInventario() { // Método para mostrar el inventario actualizado
+        if (productosPorCategoria.isEmpty()) {
+            System.out.println("El inventario está vacío.");
+            return;
+        }
+    
+        System.out.println("\n=== Inventario Actual ===");
+    
+        for (var entry : productosPorCategoria.entrySet()) {
+            String categoria = entry.getKey();
+            List<Productos> productos = entry.getValue();
+    
+            System.out.println("\nCategoría: " + categoria);
+    
+            int anchoProducto = Math.max("Producto".length(), productos.stream().mapToInt(p -> p.getNombre().length()).max().orElse(0));
+            int anchoCantidad = Math.max("Cantidad".length(), productos.stream().mapToInt(p -> String.valueOf(p.getCantidad()).length()).max().orElse(0));
+            int anchoPrecio = Math.max("Precio".length(), productos.stream().mapToInt(p -> String.format("$%,.2f", p.getPrecio()).length()).max().orElse(0));
+            int anchoValorTotal = Math.max("Valor Total".length(), productos.stream().mapToInt(p -> String.format("$%,.2f", p.getCantidad() * p.getPrecio()).length()).max().orElse(0));
+
+            String formatoEncabezado = "| %-" + anchoProducto + "s | %-" + anchoCantidad + "s | %-" + anchoPrecio + "s | %-" + anchoValorTotal + "s |\n";
+            String separador = "+-" + "-".repeat(anchoProducto) + "-+-" + "-".repeat(anchoCantidad) + "-+-" + "-".repeat(anchoPrecio) + "-+-" + "-".repeat(anchoValorTotal) + "-+";
+    
+            System.out.println(separador);
+            System.out.printf(formatoEncabezado, "Producto", "Cantidad", "Precio", "Valor Total");
+            System.out.println(separador);
+    
+            String formatoFila = "| %-" + anchoProducto + "s | %-" + anchoCantidad + "d | %-" + anchoPrecio + "s | %-" + anchoValorTotal + "s |\n";
+            for (Productos p : productos) {
+                String precioFormateado = String.format("$%,.2f", p.getPrecio());
+                String valorTotalFormateado = String.format("$%,.2f", p.getCantidad() * p.getPrecio());
+                System.out.printf(formatoFila, p.getNombre(), p.getCantidad(), precioFormateado, valorTotalFormateado);
+            }
+    
+            System.out.println(separador);
+        }
+    }
+
+    public Productos buscarProducto(String categoria, String nombreProducto) { // Método para buscar un producto por su nombre y categoría en el inventario
+        return productosPorCategoria.getOrDefault(categoria, new ArrayList<>())
+                .stream()
+                .filter(p -> p.getNombre().equalsIgnoreCase(nombreProducto))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void modificarCantidad(Scanner scanner, ReporteDeInventario reporte) { // Método para modificar la cantidad de un producto en el inventario por su nombre y categoría
+        System.out.print("\nIngrese la categoría del producto: ");
+        String categoria = Validaciones.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
+        System.out.print("Ingrese el nombre del producto: ");
+        String nombreProducto = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
+    
+        Productos producto = buscarProducto(categoria, nombreProducto);
+        if (producto != null) {
+            System.out.print("Ingrese la nueva cantidad: ");
+            int nuevaCantidad = Validaciones.leerEnteroPositivo(scanner, "Ingrese un número válido para la cantidad.");
+            int cantidadAnterior = producto.getCantidad();
+            producto.setCantidad(nuevaCantidad);
+    
+            String detalle = nuevaCantidad > cantidadAnterior
+                    ? "Nueva cantidad mayor: Ingreso de " + (nuevaCantidad - cantidadAnterior) + " unidades."
+                    : "Nueva cantidad menor: Retiro de " + (cantidadAnterior - nuevaCantidad) + " unidades.";
+    
+            reporte.registrarCambio("Modificar Cantidad", categoria, nombreProducto, detalle);
+            System.out.println("Cantidad actualizada correctamente.");
+            alerta.verificarStockBajo(productosPorCategoria);
+        } else {
+            System.out.println("Producto o categoría no encontrado.");
+        }
+    }
+
+    public void modificarPrecio(Scanner scanner, ReporteDeInventario reporte) { // Método para modificar el precio de un producto en el inventario por su nombre y categoría
+        System.out.print("\nIngrese la categoría del producto: ");
+        String categoria = Validaciones.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
+        System.out.print("Ingrese el nombre del producto: ");
+        String nombreProducto = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
+
+        Productos producto = buscarProducto(categoria, nombreProducto);
+        if (producto != null) {
+            System.out.print("Ingrese el nuevo precio: ");
+            double nuevoPrecio = Validaciones.leerDoublePositivo(scanner, "Ingrese un número válido para el precio.");
+            double precioAnterior = producto.getPrecio();
+            producto.setPrecio(nuevoPrecio);
+            System.out.println("Precio actualizado correctamente.");
+            reporte.registrarCambio("Modificar Precio", categoria, nombreProducto,
+                    "Precio anterior: $" + precioAnterior + ", Nuevo precio: $" + nuevoPrecio);
+            alerta.verificarStockBajo(productosPorCategoria);
+        } else {
+            System.out.println("Producto o categoría no encontrado.");
+        }
+    }
+
+    public void eliminarProducto(Scanner scanner, ReporteDeInventario reporte) { // Método para eliminar un producto del inventario por su nombre y categoría
+        System.out.print("\nIngrese la categoría del producto: ");
+        String categoria = scanner.nextLine();
+        System.out.print("Ingrese el nombre del producto: ");
+        String nombreProducto = scanner.nextLine();
+    
+        List<Productos> productos = productosPorCategoria.get(categoria);
+        if (productos != null && productos.removeIf(p -> p.getNombre().equalsIgnoreCase(nombreProducto))) {
+            String detalle = "Retiro total: Producto eliminado del inventario.";
+            reporte.registrarCambio("Eliminar Producto", categoria, nombreProducto, detalle);
+            System.out.println("Producto eliminado correctamente.");
+            alerta.verificarStockBajo(productosPorCategoria);
+        } else {
+            System.out.println("Producto o categoría no encontrado.");
+        }
+    }
+
+    public void eliminarCategoria(Scanner scanner, ReporteDeInventario reporte) { // Método para eliminar una categoría y sus productos del inventario
+        System.out.print("\nIngrese el nombre de la categoría que desea eliminar: ");
+        String categoria = scanner.nextLine();
+
+        if (productosPorCategoria.containsKey(categoria)) {
+            productosPorCategoria.remove(categoria);
+            System.out.println("Categoría '" + categoria + "' eliminada correctamente junto con sus productos.");
+        } else {
+            System.out.println("La categoría no existe.");
+        }
+    }
+
+
+    public void buscarPorNombre(String nombreProducto) {// Método para buscar un producto por su nombre en el inventario
+        boolean encontrado = false;
+        System.out.println("\n=== Resultados de la búsqueda por nombre ===");
+        for (var entry : productosPorCategoria.entrySet()) {
+            for (Productos p : entry.getValue()) {
+                if (p.getNombre().equalsIgnoreCase(nombreProducto)) {
+                    System.out.printf("Categoría: %s | Producto: %s | Cantidad: %d | Precio: $%.2f\n",
+                            entry.getKey(), p.getNombre(), p.getCantidad(), p.getPrecio());
+                    encontrado = true;
+                }
+            }
+        }
+        if (!encontrado) {
+            System.out.println("No se encontró ningún producto con el nombre especificado.");
+        }
+    }
+
+    public void buscarPorCategoria(String categoria) { // Método para buscar productos por categoría  en el inventario
+        List<Productos> productos = productosPorCategoria.get(categoria);
+        if (productos != null && !productos.isEmpty()) {
+            System.out.println("\n=== Productos en la categoría: " + categoria + " ===");
+            for (Productos p : productos) {
+                System.out.printf("Producto: %s | Cantidad: %d | Precio: $%.2f\n",
+                        p.getNombre(), p.getCantidad(), p.getPrecio());
+            }
+        } else {
+            System.out.println("No se encontraron productos en la categoría especificada.");
+        }
+    }
+
+    public void cargarInventario(InventarioRepository repository) {
+        productosPorCategoria = repository.cargarInventario();
+    }
+
+    public void guardarInventario(InventarioRepository repository) {
+        repository.guardarInventario(productosPorCategoria);
+    }
+
+    public Map<String, List<Productos>> getProductosPorCategoria() { // Método para obtener los productos por categoría en el inventario
+        return productosPorCategoria;
+    }
+
+    public void exportarInventario(File archivoCSV) {
+        this.archivoCSV.exportar(archivoCSV, productosPorCategoria);
+    }
+
+    public void importarInventario(File archivoCSV) {
+        this.archivoCSV.importar(archivoCSV, productosPorCategoria, this);
+    }
+}
+
+
+
+
+class InventarioRepository {
+    private final File archivo;
+
+    public InventarioRepository(File archivo) {
+        this.archivo = archivo;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, List<Productos>> cargarInventario() {
+        Map<String, List<Productos>> productosPorCategoria = new HashMap<>();
+        try {
+            if (!archivo.exists()) {
+                archivo.getParentFile().mkdirs();
+                archivo.createNewFile();
+                System.out.println("El archivo de inventario no existía. Se ha creado un nuevo archivo en: " + archivo.getAbsolutePath());
+                return productosPorCategoria;
+            }
+
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+                Object obj = ois.readObject();
+                if (obj instanceof Map<?, ?>) {
+                    productosPorCategoria = (Map<String, List<Productos>>) obj;
+                } else {
+                    System.out.println("El archivo no contiene un formato válido de inventario.");
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al cargar el inventario: " + e.getMessage());
+        }
+        return productosPorCategoria;
+    }
+
+    public void guardarInventario(Map<String, List<Productos>> productosPorCategoria) {
+        try {
+            if (!archivo.exists()) {
+                archivo.getParentFile().mkdirs();
+                archivo.createNewFile();
+            }
+
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivo))) {
+                oos.writeObject(productosPorCategoria);
+            }
+        } catch (IOException e) {
+            System.out.println("Error al guardar el inventario: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+class ReporteDeInventario { // Clase para generar reportes detallados del inventario y mostrar el historial de cambios
+   
+    private final File archivoHistorial = new File("Alpha/Archivo_Proyecto/historial_cambios.dat"); // Ruta del archivo para almacenar el historial de cambios
+    private List<String> registroDeCambios = new ArrayList<>(); // Lista para almacenar los registros de cambios en el inventario
+
+    public void registrarCambio(String accion, String categoria, String producto, String detalle) { // Método para registrar un cambio en el inventario
+        String timestamp = new Date().toString();
+        String tipoMovimiento;
+    
+        // Determinar si la acción es un ingreso o un retiro
+        if (accion.equalsIgnoreCase("Agregar Producto") || accion.equalsIgnoreCase("Modificar Cantidad") && detalle.contains("Nueva cantidad mayor")) {
+            tipoMovimiento = "Ingreso";
+        } else if (accion.equalsIgnoreCase("Eliminar Producto") || accion.equalsIgnoreCase("Modificar Cantidad") && detalle.contains("Nueva cantidad menor")) {
+            tipoMovimiento = "Retiro";
+        } else {
+            tipoMovimiento = "Otro"; // Para acciones que no sean ingresos o retiros
+        }
+    
+        // Formatear el registro
+        String registro = String.format("[%s] Movimiento: %s | Acción: %s | Categoría: %s | Producto: %s | Detalle: %s",
+                timestamp, tipoMovimiento, accion, categoria, producto, detalle);
+        registroDeCambios.add(registro);
+        guardarHistorial(); 
+    }
+
+    
+    public void mostrarRegistroDeCambios(Scanner scanner) { // Método para mostrar el historial de cambios en el inventario
+        cargarHistorial(); 
+        if (registroDeCambios.isEmpty()) {
+            System.out.println("No hay cambios registrados en el inventario.");
+            return;
+        }
+
+        System.out.println("\n=== Registro de Cambios en el Inventario ===");
+        for (String registro : registroDeCambios) {
+            System.out.println(registro);
+        }
+
+        System.out.print("\n¿Desea borrar el historial de cambios? (s/n): ");
+        String respuesta = scanner.nextLine();
+        if (respuesta.equalsIgnoreCase("s")) {
+            borrarHistorial();
+        }
+    }
+
+    
+    public void borrarHistorial() { // Método para borrar el historial de cambios
+        registroDeCambios.clear();
+        if (archivoHistorial.exists()) {
+            archivoHistorial.delete(); 
+        }
+        System.out.println("El historial de cambios ha sido borrado.");
+    }
+
+    
+    public void guardarHistorial() { // Método para guardar el historial de cambios en un archivo
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoHistorial))) {
+            oos.writeObject(registroDeCambios);
+        } catch (IOException e) {
+            System.out.println("Error al guardar el historial de cambios: " + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked") //Para evitar advertencias de compilación de tipos en la conversión de objetos a List<String>
+    public void cargarHistorial() { // Método para cargar el historial de cambios desde un archivo
+        if (!archivoHistorial.exists()) {
+            try {
+                archivoHistorial.getParentFile().mkdirs(); 
+                archivoHistorial.createNewFile(); 
+                System.out.println("El archivo de historial de cambios no existía. Se ha creado un nuevo archivo en: " + archivoHistorial.getAbsolutePath());
+            } catch (IOException e) {
+                System.out.println("Error al crear el archivo de historial de cambios: " + e.getMessage());
+            }
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoHistorial))) {
+            registroDeCambios = (List<String>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al cargar el historial de cambios: " + e.getMessage());
+        }
+    }
+
+    public void generarReporte(ControlStock controlStock) { // Método para generar un reporte detallado del inventario
+        Map<String, List<Productos>> productosPorCategoria = controlStock.getProductosPorCategoria(); // Obtener los productos por categoría del inventario actual
+    
+        if (productosPorCategoria.isEmpty()) {
+            System.out.println("El inventario está vacío. No hay datos para generar el reporte.");
+            return;
+        }
+    
+        double valorTotalInventario = 0.0;
+    
+        System.out.println("\n=== Reporte Detallado del Inventario ===");
+        for (var entry : productosPorCategoria.entrySet()) {
+            String categoria = entry.getKey();
+            List<Productos> productos = entry.getValue();
+    
+            System.out.println("\nCategoría: " + categoria);
+
+            int anchoProducto = Math.max("Producto".length(), productos.stream().mapToInt(p -> p.getNombre().length()).max().orElse(0));
+            int anchoCantidad = Math.max("Cantidad".length(), productos.stream().mapToInt(p -> String.valueOf(p.getCantidad()).length()).max().orElse(0));
+            int anchoPrecio = Math.max("Precio".length(), productos.stream().mapToInt(p -> String.format("$%,.2f", p.getPrecio()).length()).max().orElse(0));
+            int anchoValorTotal = Math.max("Valor Total".length(), productos.stream().mapToInt(p -> String.format("$%,.2f", p.getCantidad() * p.getPrecio()).length()).max().orElse(0));
+
+            String formatoEncabezado = "| %-" + anchoProducto + "s | %-" + anchoCantidad + "s | %-" + anchoPrecio + "s | %-" + anchoValorTotal + "s |\n";
+            String separador = "+-" + "-".repeat(anchoProducto) + "-+-" + "-".repeat(anchoCantidad) + "-+-" + "-".repeat(anchoPrecio) + "-+-" + "-".repeat(anchoValorTotal) + "-+";
+    
+            System.out.println(separador);
+            System.out.printf(formatoEncabezado, "Producto", "Cantidad", "Precio", "Valor Total");
+            System.out.println(separador);
+
+            String formatoFila = "| %-" + anchoProducto + "s | %-" + anchoCantidad + "d | %-" + anchoPrecio + "s | %-" + anchoValorTotal + "s |\n";
+            double valorTotalCategoria = 0.0;
+            for (Productos producto : productos) {
+                String precioFormateado = String.format("$%,.2f", producto.getPrecio());
+                String valorTotalFormateado = String.format("$%,.2f", producto.getCantidad() * producto.getPrecio());
+                System.out.printf(formatoFila, producto.getNombre(), producto.getCantidad(), precioFormateado, valorTotalFormateado);
+    
+                valorTotalCategoria += producto.getCantidad() * producto.getPrecio();
+            }
+    
+            System.out.println(separador);
+            System.out.printf("Valor total de la categoría '%s': $%,.2f\n", categoria, valorTotalCategoria);
+            valorTotalInventario += valorTotalCategoria;
+        }
+    
+        System.out.printf("\n=== Valor total del inventario: $%,.2f ===\n", valorTotalInventario);
+    }
+}
+
+
+
+
+
+class ArchivoCSV {
+
+    public void exportar(File archivoCSV, Map<String, List<Productos>> productosPorCategoria) {
+        try (BufferedWriter writer = Files.newBufferedWriter(archivoCSV.toPath())) {
+            writer.write("Categoría,Producto,Cantidad,Precio\n"); // Encabezado del archivo CSV
+            for (var entry : productosPorCategoria.entrySet()) {
+                String categoria = entry.getKey();
+                for (Productos producto : entry.getValue()) {
+                    writer.write(String.format("%s,%s,%d,%.2f\n",
+                            categoria, producto.getNombre(), producto.getCantidad(), producto.getPrecio()));
+                }
+            }
+            System.out.println("Inventario exportado correctamente a " + archivoCSV.getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Error al exportar el inventario a CSV: " + e.getMessage());
+        }
+    }
+
+    public void importar(File archivoCSV, Map<String, List<Productos>> productosPorCategoria, ControlStock controlStock) {
+        if (!archivoCSV.exists()) {
+            System.out.println("El archivo CSV especificado no existe en: " + archivoCSV.getAbsolutePath());
+            return;
+        }
+
+        try (BufferedReader reader = Files.newBufferedReader(archivoCSV.toPath())) {
+            String linea = reader.readLine(); // Leer encabezado
+            if (linea == null || !linea.equals("Categoría,Producto,Cantidad,Precio")) {
+                System.out.println("El archivo CSV no tiene el formato esperado. Asegúrate de que el encabezado sea 'Categoría,Producto,Cantidad,Precio'.");
+                return;
+            }
+
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length == 4) {
+                    try {
+                        String categoria = datos[0].trim();
+                        String nombre = datos[1].trim();
+                        int cantidad = Integer.parseInt(datos[2].trim());
+                        double precio = Double.parseDouble(datos[3].trim());
+
+                        // Verificar si el producto ya existe
+                        Productos productoExistente = controlStock.buscarProducto(categoria, nombre);
+                        if (productoExistente != null) {
+                            // Actualizar cantidad y precio del producto existente
+                            productoExistente.setCantidad(productoExistente.getCantidad() + cantidad);
+                            productoExistente.setPrecio(precio);
+                            System.out.printf("Producto actualizado: Categoría='%s', Nombre='%s', Nueva Cantidad=%d, Nuevo Precio=%.2f\n",
+                                    categoria, nombre, productoExistente.getCantidad(), precio);
+                        } else {
+                            // Agregar nuevo producto
+                            Productos nuevoProducto = new Productos(nombre, categoria, cantidad, precio);
+                            controlStock.agregarProducto(nuevoProducto);
+                            System.out.printf("Producto importado: Categoría='%s', Nombre='%s', Cantidad=%d, Precio=%.2f\n",
+                                    categoria, nombre, cantidad, precio);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error al procesar una línea del archivo CSV. Asegúrate de que los valores de cantidad y precio sean numéricos.");
+                    }
+                } else {
+                    System.out.println("Línea ignorada por formato incorrecto: " + linea);
+                }
+            }
+            System.out.println("Inventario importado correctamente desde " + archivoCSV.getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo CSV: " + e.getMessage());
+        }
+    }
+}
+
+
+
+
+class alertaStock { // Clase para verificar y mostrar alertas de productos con stock bajo
+    public static final int LIMITE_STOCK_BAJO = 20; // Límite de stock bajo para mostrar la alerta
+
+    public void verificarStockBajo(Map<String, List<Productos>> productosPorCategoria) { // Método para verificar si hay productos con stock bajo
+        boolean hayStockBajo = false;
+        StringBuilder alerta = new StringBuilder("\n=== ALERTA: Productos con stock bajo ===\n");
+
+        for (var entry : productosPorCategoria.entrySet()) {
+            String categoria = entry.getKey();
+            for (Productos producto : entry.getValue()) {
+                if (producto.getCantidad() < LIMITE_STOCK_BAJO) {
+                    hayStockBajo = true;
+                    alerta.append(String.format("Categoría: %s | Producto: %s | Stock: %d | Precio: $%.2f\n",
+                            categoria, producto.getNombre(), producto.getCantidad(), producto.getPrecio()));
+                }
+            }
+        }
+
+        if (hayStockBajo) {
+            System.out.println(alerta);
+        }
+    }
+}
+
+
+
+
+class MenuInventario { // Clase para mostrar el menú de opciones relacionadas con el inventario y sus operaciones
+
+    public static void mostrarSubmenuInventario(Scanner scanner, ControlStock controlStock, ReporteDeInventario reporte) { // Método para mostrar el menú de opciones del inventario 
+        boolean regresarAlMenu = false;
+        while (!regresarAlMenu) {
+            System.out.println("\n=== MODIFICACIONES DE INVENTARIO ===");
+            System.out.println("1. Agregar Categoría");
+            System.out.println("2. Agregar Producto(s)");
+            System.out.println("3. Modificar cantidad de un producto");
+            System.out.println("4. Modificar precio de un producto");
+            System.out.println("5. Eliminar un producto");
+            System.out.println("6. Eliminar una categoría");
+            System.out.println("7. Exportar inventario a CSV");
+            System.out.println("8. Importar inventario desde CSV");
+            System.out.println("9. Regresar al menú principal");
+            System.out.print("Seleccione una opción: ");
+            int opcionModificacion = Integer.parseInt(scanner.nextLine());
+            switch (opcionModificacion) {
+                case 1 -> SistemaDeGestionDeInventarios.agregarCategoria(scanner, controlStock);
+                case 2 -> SistemaDeGestionDeInventarios.agregarProductos(scanner, controlStock, reporte);
+                case 3 -> controlStock.modificarCantidad(scanner, reporte);
+                case 4 -> controlStock.modificarPrecio(scanner, reporte);
+                case 5 -> controlStock.eliminarProducto(scanner, reporte);
+                case 6 -> controlStock.eliminarCategoria(scanner, reporte);
+                case 7 -> {
+                    System.out.print("Ingrese el nombre del archivo CSV para exportar (por ejemplo, 'Alpha/Archivo_Proyecto/inventario.csv'): ");
+                    String nombreArchivo = scanner.nextLine();
+                    File archivoCSV = new File(nombreArchivo);
+                    controlStock.exportarInventario(archivoCSV);
+                }
+                case 8 -> {
+                    System.out.print("Ingrese el nombre del archivo CSV para importar (por ejemplo, 'Alpha/Archivo_Proyecto/inventario.csv'): ");
+                    String nombreArchivo = scanner.nextLine();
+                    File archivoCSV = new File(nombreArchivo);
+                    controlStock.importarInventario(archivoCSV);
+                }
+                case 9 -> {
+                    regresarAlMenu = true;
+                    System.out.println("Regresando al menú principal...");
+                }
+                default -> System.out.println("Opción no válida.");
+            }
+        }
+    }
+}
+
+
+
+
+class MenuProveedores { // Clase para mostrar el menú de opciones relacionadas con la gestión de proveedores
+
+    public static void mostrarSubmenuProveedores(Scanner scanner, ControlProveedores controlProveedores) { // Método para mostrar el menú de opciones de gestión de proveedores
+        boolean regresarAlMenu = false;
+        while (!regresarAlMenu) {
+            System.out.println("\n=== GESTIÓN DE PROVEEDORES ===");
+            System.out.println("1. Mostrar Proveedores");
+            System.out.println("2. Agregar Proveedor");
+            System.out.println("3. Eliminar Proveedor");
+            System.out.println("4. Regresar al menú principal");
+            System.out.print("Seleccione una opción: ");
+            int opcionProveedores = Integer.parseInt(scanner.nextLine());
+            switch (opcionProveedores) {
+                case 1 -> controlProveedores.mostrarProveedores();
+                case 2 -> controlProveedores.agregarProveedor(scanner);
+                case 3 -> controlProveedores.eliminarProveedor(scanner);
+                case 4 -> {
+                    regresarAlMenu = true;
+                    System.out.println("Regresando al menú principal...");
+                }
+                default -> System.out.println("Opción no válida.");
+            }
+        }
+    }
+}
+
+
+
+
+class MenuReportes { // Clase para mostrar el menú de opciones relacionadas con los reportes del inventario
+
+    public static void mostrarSubmenuReportes(Scanner scanner, ControlStock controlStock, ReporteDeInventario reporte) { // Método para mostrar el menú de opciones de reportes 
+        boolean regresarAlMenu = false; 
+        while (!regresarAlMenu) {
+            System.out.println("\n=== REPORTES ===");
+            System.out.println("1. Generar reporte detallado del inventario");
+            System.out.println("2. Mostrar registro de cambios");
+            System.out.println("3. Regresar al menú principal");
+            System.out.print("Seleccione una opción: ");
+            int opcionReporte = Integer.parseInt(scanner.nextLine());
+            switch (opcionReporte) {
+                case 1 -> reporte.generarReporte(controlStock);
+                case 2 -> reporte.mostrarRegistroDeCambios(scanner);
+                case 3 -> {
+                    regresarAlMenu = true;
+                    System.out.println("Regresando al menú principal...");
+                }
+                default -> System.out.println("Opción no válida.");
+            }
+        }
+    }
+}
+
+
+
+
+class MenuBusqueda { // Clase para mostrar el menú de opciones relacionadas con la búsqueda de productos en el inventario
+
+    public static void mostrarSubmenuBusqueda(Scanner scanner, ControlStock controlStock) { // Método para mostrar el menú de opciones de búsqueda
+        boolean regresarAlMenu = false;
+        while (!regresarAlMenu) {
+            System.out.println("\n=== BÚSQUEDA EN INVENTARIO ===");
+            System.out.println("1. Buscar productos por categoría");
+            System.out.println("2. Buscar producto por nombre");
+            System.out.println("3. Regresar al menú principal");
+            System.out.print("Seleccione una opción: ");
+            int opcionBusqueda = Integer.parseInt(scanner.nextLine());
+            switch (opcionBusqueda) {
+                case 1 -> {
+                    System.out.print("Ingrese la categoría a buscar: ");
+                    controlStock.buscarPorCategoria(scanner.nextLine());
+                }
+                case 2 -> {
+                    System.out.print("Ingrese el nombre del producto a buscar: ");
+                    String nombreProducto = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
+                    controlStock.buscarPorNombre(nombreProducto);
+                }
+                case 3 -> {
+                    regresarAlMenu = true;
+                    System.out.println("Regresando al menú principal...");
+                }
+                default -> System.out.println("Opción no válida.");
+            }
+        }
+    }
+}
+
+
+
+
+class Menu { // Clase para mostrar el menú principal de opciones del sistema
+
+    public static void mostrarMenuInventario(boolean esAdmin) { // Método para mostrar el menú principal de opciones
+        System.out.println("\n=== MENÚ DE INVENTARIO ===");
+        System.out.println("1. Mostrar Inventario");
+        System.out.println("2. Modificaciones de Inventario");
+        System.out.println("3. Búsqueda en Inventario");
+        System.out.println("4. Reportes");
+        System.out.println("5. Gestionar Proveedores");
+        System.out.println("6. Cerrar sesión");
+    }
+    public static boolean procesarOpcionInventario( // Método para procesar la opción seleccionada por el usuario en el menú principal
+            int opcion,
+            Scanner scanner,
+            ControlStock controlStock,
+            ReporteDeInventario reporte,
+            File archivo,
+            Login login,
+            boolean esAdmin,
+            InventarioRepository inventarioRepository
+    ) {
+        ControlProveedores controlProveedores = new ControlProveedores();
+        switch (opcion) {
+            case 1 -> controlStock.mostrarInventario();
+            case 2 -> MenuInventario.mostrarSubmenuInventario(scanner, controlStock, reporte);
+            case 3 -> MenuBusqueda.mostrarSubmenuBusqueda(scanner, controlStock);
+            case 4 -> MenuReportes.mostrarSubmenuReportes(scanner, controlStock, reporte);
+            case 5 -> MenuProveedores.mostrarSubmenuProveedores(scanner, controlProveedores);
+            case 6 -> {
+                controlStock.guardarInventario(inventarioRepository);
+                System.out.println("Sesión cerrada. ¡Hasta luego!");
+                return true;
+            }
+            default -> System.out.println("Opción no válida.");
+        }
+        return false;
+    }
+}
+
+
+
+
+class Validaciones{ // Clase para validar las entradas del usuario en el sistema
+        
+        public static int leerEnteroPositivo(Scanner scanner, String mensajeError) { // Método para validar un número entero positivo
+            while (true) {
+                try {
+                    int numero = Integer.parseInt(scanner.nextLine());
+                    if (numero > 0) {
+                        return numero;
+                    } else {
+                        System.out.println("Por favor, ingrese un número positivo.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(mensajeError);
+                }
+            }
+        }
+
+        public static double leerDoublePositivo(Scanner scanner, String mensajeError) { // Método para validar un número decimal positivo
+            while (true) {
+                try {
+                    double numero = Double.parseDouble(scanner.nextLine());
+                    if (numero > 0) {
+                        return numero;
+                    } else {
+                        System.out.println("Por favor, ingrese un número positivo.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println(mensajeError);
+                }
+            }
+        }
+    
+        public static String leerTextoNoVacio(Scanner scanner, String mensajeError) { // Método para validar una cadena de texto no vacía
+            while (true) {
+                String entrada = scanner.nextLine().trim();
+                if (!entrada.isEmpty()) {
+                    return entrada;
+                }
+                System.out.println(mensajeError);
+            }
+        }
+    }
+
+
+
+
+public class SistemaDeGestionDeInventarios { // Clase principal para ejecutar el sistema de gestión de inventarios
+
+    public static void main(String[] args) { // Método principal para ejecutar el sistema
+        Scanner scanner = new Scanner(System.in);
+        Login login = new Login();
+        ControlStock controlStock = new ControlStock();
+        File archivoInventario = new File("Alpha/Archivo_Proyecto/inventario.dat");
+        InventarioRepository inventarioRepository = new InventarioRepository(archivoInventario);
+        ReporteDeInventario reporte = new ReporteDeInventario();
+
+        boolean salirSistema = false;
+        while (!salirSistema) {
+            String usuarioLogueado = manejarLogin(scanner, login);
+            controlStock.cargarInventario(inventarioRepository);
+
+            boolean cerrarSesion = false;
+            boolean esAdmin = login.esUsuarioAdmin(usuarioLogueado);
+            while (!cerrarSesion) {
+                mostrarMenu(esAdmin);
+                cerrarSesion = procesarOpcion(scanner, controlStock, reporte, archivoInventario, login, esAdmin, inventarioRepository);
+            }
+
+            controlStock.guardarInventario(inventarioRepository);
+        }
+
+        scanner.close();
+    }
+
+    public static String manejarLogin(Scanner scanner, Login login) { // Método para manejar el inicio de sesión del usuario
+        return login.manejarLogin(scanner);
+    }
+
+    public static void mostrarMenu(boolean esAdmin) { // Método para mostrar el menú principal del sistema
+        Menu.mostrarMenuInventario(esAdmin);
+    }
+
+    public static boolean procesarOpcion(Scanner scanner, ControlStock controlStock, ReporteDeInventario reporte, File archivoInventario, Login login, boolean esAdmin,                          InventarioRepository inventarioRepository) {
+        try {
+            System.out.print("Seleccione una opción: ");
+            int opcion = Integer.parseInt(scanner.nextLine());
+            return Menu.procesarOpcionInventario(opcion, scanner, controlStock, reporte, archivoInventario, login, esAdmin, inventarioRepository);
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Por favor, ingrese un número válido.");
+            return false;
+        }
+    }
+
+    public static void agregarCategoria(Scanner scanner, ControlStock controlStock) { // Método para agregar una nueva categoría al inventario
+        System.out.print("Ingrese el nombre de la nueva categoría: ");
+        String categoria = Validaciones.leerTextoNoVacio(scanner, "El nombre de la categoría no puede estar vacío. Intente nuevamente.");
+        controlStock.agregarCategoria(categoria);
+    }
+    
+    public static void agregarProductos(Scanner scanner, ControlStock controlStock, ReporteDeInventario reporte) { // Método para agregar productos a una categoría del inventario
+        System.out.print("Ingrese la categoría del producto: ");
+        String categoria = Validaciones.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
+    
+        if (!controlStock.existeCategoria(categoria)) {
+            System.out.println("La categoría no existe. Cree la categoría primero.");
+            return;
+        }
+    
+        boolean agregarMas = true; // Variable para controlar si se agregan más productos a la categoría
+        while (agregarMas) {
+            System.out.print("Ingrese el nombre del producto: ");
+            String nombre = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
+            System.out.print("Ingrese la cantidad en stock: ");
+            int cantidad = Validaciones.leerEnteroPositivo(scanner, "Ingrese un número válido para la cantidad.");
+            System.out.print("Ingrese el precio del producto: ");
+            double precio = Validaciones.leerDoublePositivo(scanner, "Ingrese un número válido para el precio.");
+    
+            Productos nuevoProducto = new Productos(nombre, categoria, cantidad, precio);
+            controlStock.agregarProducto(nuevoProducto);
+            System.out.println("Producto agregado correctamente.");
+    
+            reporte.registrarCambio("Agregar Producto", categoria, nombre,
+                    "Cantidad: " + cantidad + ", Precio: $" + precio);
+    
+            System.out.print("¿Desea agregar otro producto a esta categoría? (s/n): ");
+            String respuesta = scanner.nextLine();
+            if (respuesta.equalsIgnoreCase("n")) {
+                agregarMas = false;
+            }
+        }
+    }
+}
