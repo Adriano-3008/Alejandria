@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.*; 
 
 // Clase para controlar el inventario de productos y sus operaciones (agregar, modificar, eliminar, buscar, etc.)
-public class ControlStock {
+public class InventoryManagement {
     private Map<String, List<Producto>> productosPorCategoria = new HashMap<>();
     private alertaStock alerta = new alertaStock();
     private ArchivoCSV archivoCSV = new ArchivoCSV();
@@ -287,7 +287,7 @@ class ArchivoCSV {
         }
     }
 
-    public void importar(File archivoCSV, Map<String, List<Producto>> productosPorCategoria, ControlStock controlStock) {
+    public void importar(File archivoCSV, Map<String, List<Producto>> productosPorCategoria, InventoryManagement controlStock) {
         if (!archivoCSV.exists()) {
             System.out.println("El archivo CSV especificado no existe en: " + archivoCSV.getAbsolutePath());
             return;

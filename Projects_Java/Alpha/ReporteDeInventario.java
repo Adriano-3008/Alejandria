@@ -87,7 +87,7 @@ public class ReporteDeInventario { // Clase para generar reportes detallados del
         }
     }
 
-    public void generarReporte(ControlStock controlStock) { // Método para generar un reporte detallado del inventario
+    public void generarReporte(InventoryManagement controlStock) { // Método para generar un reporte detallado del inventario
         Map<String, List<Producto>> productosPorCategoria = controlStock.getProductosPorCategoria(); // Obtener los productos por categoría del inventario actual
     
         if (productosPorCategoria.isEmpty()) {
