@@ -25,13 +25,13 @@ public class Menu { // Clase para mostrar el menú principal de opciones del sis
             boolean esAdmin,
             InventarioRepository inventarioRepository
     ) {
-        ControlProveedores controlProveedores = new ControlProveedores();
+        ControlProveedor controlProveedores = new ControlProveedor();
         switch (opcion) {
             case 1 -> controlStock.mostrarInventario();
             case 2 -> MenuInventario.mostrarSubmenuInventario(scanner, controlStock, reporte);
             case 3 -> MenuBusqueda.mostrarSubmenuBusqueda(scanner, controlStock);
             case 4 -> MenuReportes.mostrarSubmenuReportes(scanner, controlStock, reporte);
-            case 5 -> MenuProveedores.mostrarSubmenuProveedores(scanner, controlProveedores);
+            case 5 -> MenuProveedor.mostrarSubmenuProveedor(scanner, controlProveedores);
             case 6 -> {
                 controlStock.guardarInventario(inventarioRepository);
                 System.out.println("Sesión cerrada. ¡Hasta luego!");
@@ -150,9 +150,9 @@ class MenuReportes { // Clase para mostrar el menú de opciones relacionadas con
     }
 }
 
-class MenuProveedores { // Clase para mostrar el menú de opciones relacionadas con la gestión de proveedores
+class MenuProveedor { // Clase para mostrar el menú de opciones relacionadas con la gestión de proveedores
 
-    public static void mostrarSubmenuProveedores(Scanner scanner, ControlProveedores controlProveedores) { // Método para mostrar el menú de opciones de gestión de proveedores
+    public static void mostrarSubmenuProveedor(Scanner scanner, ControlProveedor controlProveedores) { // Método para mostrar el menú de opciones de gestión de proveedores
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== GESTIÓN DE PROVEEDORES ===");
