@@ -1,0 +1,135 @@
+Okay, analicemos el diagrama de clases proporcionado con el objetivo de aplicar el Principio de Responsabilidad Única (SRP) y explorar el uso de interfaces o clases abstractas.
+
+1. Análisis y Modificaciones para el Principio de Responsabilidad Única (SRP)
+
+El SRP establece que una clase debe tener una, y solo una, razón para cambiar. Varias clases en el diagrama actual parecen tener múltiples responsabilidades.
+
+SistemaDeGestionDeInventarios:
+
+Responsabilidades Actuales: Orquestación principal (main), manejo de login, presentación de menú, procesamiento de opciones de menú, delegación de tareas específicas (agregar categoría/producto). También interactúa directamente con Scanner.
+Violación SRP: Sí. Mezcla la lógica de flujo de la aplicación (menú, ciclo principal), interacción con el usuario (Scanner) y la coordinación de operaciones de negocio.
+Sugerencias:
+Debería enfocarse principalmente en la orquestación del flujo de la aplicación.
+Extraer la lógica de interacción con el usuario (lectura de Scanner, mostrar menús/mensajes) a una nueva clase, por ejemplo, InterfazUsuarioConsola.
+Las acciones específicas como agregarCategoria, agregarProductos, manejarLogin deberían delegarse completamente a las clases controladoras (ControlStock, Login), pero la decisión de cuál llamar según la opción del menú permanece aquí o en InterfazUsuarioConsola.
+Login:
+
+Responsabilidades Actuales: Autenticación (iniciarSesion), gestión de usuarios (CRUD: registrarUsuario, borrarUsuario, verUsuariosRegistrados), persistencia de usuarios (cargarUsuarios, guardarUsuarios), interacción con el usuario (Scanner).
+Violación SRP: Sí. Mezcla autenticación, gestión de datos de usuario, persistencia y lógica de interfaz de usuario.
+Sugerencias:
+Autenticador: Clase responsable únicamente de verificar credenciales (iniciarSesion, esUsuarioAdmin). Podría depender de un repositorio de usuarios.
+GestionUsuarios: Clase para manejar el CRUD de usuarios (registrar, borrar, obtenerUsuario, listarUsuarios).
+UsuarioRepository: Clase responsable de la persistencia (cargar/guardar usuarios desde archivoUsuarios).
+La interacción con Scanner debe moverse a la clase de interfaz de usuario.
+ControlStock:
+
+Responsabilidades Actuales: Gestión del estado del inventario en memoria (productosPorCategoria), lógica de negocio (agregar, modificar, eliminar productos/categorías, buscar), interacción con ReporteDeInventario, alertaStock, y persistencia (ArchivoCSV? - no está claro, pero sugiere persistencia), interacción con usuario (Scanner).
+Violación SRP: Sí. Mezcla gestión de estado en memoria, lógica de negocio, coordinación con otros componentes (reportes, alertas), potencialmente persistencia y lógica de interfaz de usuario.
+Sugerencias:
+Renombrar a GestionInventario (o similar) para enfocarse en la lógica de negocio y gestión del estado en memoria del inventario (agregar, modificar, eliminar, buscar).
+Eliminar la dependencia directa de Scanner. La clase InterfazUsuarioConsola le pasará los datos necesarios.
+La persistencia debe ser manejada exclusivamente por InventarioRepository. GestionInventario usará InventarioRepository para cargar y guardar.
+La generación de reportes la hace ReporteDeInventario, que podría recibir los datos necesarios de GestionInventario.
+La verificación de alertas la hace alertaStock, que podría recibir los datos necesarios de GestionInventario.
+ControlProveedores:
+
+Responsabilidades Actuales: Gestión de la lista de proveedores en memoria, CRUD, búsqueda, carga/guardado desde archivo (archivoProveedores), interacción con usuario (Scanner).
+Violación SRP: Sí. Mezcla gestión de datos en memoria, persistencia e interacción con el usuario.
+Sugerencias:
+GestionProveedores: Responsable de la lógica de negocio y gestión en memoria (CRUD, búsqueda).
+ProveedorRepository: Responsable de cargar/guardar proveedores desde archivoProveedores.
+Eliminar la dependencia de Scanner, moverla a la interfaz de usuario.
+InventarioRepository:
+
+Responsabilidades Actuales: Carga, guardado, exportación e importación de datos del inventario desde/hacia archivos. Tiene métodos duplicados o con firmas confusas (ej. cargarInventario que recibe otro InventarioRepository).
+Violación SRP: No fundamentalmente (se centra en persistencia), pero necesita limpieza.
+Sugerencias:
+Simplificar y clarificar métodos: Tener un cargar(), guardar(Map<String, List<Productos>>), exportar(File, Map<String, List<Productos>>) e importar(File): Map<String, List<Productos>>.
+El repositorio no debería depender de ControlStock (importar). Debe devolver los datos cargados, y GestionInventario los procesará.
+HistorialCambios:
+
+Responsabilidades Actuales: Mantenimiento del registro de cambios en memoria, persistencia (cargar/guardar), interacción con usuario (Scanner, mostrarRegistroDeCambios).
+Violación SRP: Sí. Mezcla gestión de datos en memoria, persistencia e interacción con usuario.
+Sugerencias:
+GestionHistorial: Mantiene la lista registroDeCambios en memoria, añade nuevos registros (registrarCambio).
+HistorialRepository: Carga/guarda el historial desde archivoHistorial.
+ReporteHistorial (o similar): Responsable de formatear y mostrar el historial (podría ser parte de la Interfaz de Usuario). Eliminar Scanner.
+Productos, Proveedor:
+
+Responsabilidades Actuales: Representar datos.
+Violación SRP: No. Son clases de datos (POJOs/Entidades). Están bien.
+ReporteDeInventario:
+
+Responsabilidades Actuales: Generar un reporte.
+Violación SRP: No. Responsabilidad única y clara.
+alertaStock:
+
+Responsabilidades Actuales: Verificar stock bajo.
+Violación SRP: No. Responsabilidad única y clara.
+Validaciones:
+
+Responsabilidades Actuales: Utilidades de validación de entrada ligadas a Scanner.
+Violación SRP: Sí (aunque es una clase de utilidad). Está fuertemente acoplada a la entrada por consola (Scanner).
+Sugerencias: Estas validaciones son parte de la capa de interfaz de usuario. Deberían estar en InterfazUsuarioConsola o ser llamadas por ella. Las clases de lógica de negocio (GestionInventario, GestionProveedores) deberían recibir datos ya validados o lanzar excepciones si los datos son incorrectos.
+2. Sugerencias de Interfaces o Clases Abstractas
+
+Persistencia (Repositorios): Se observa un patrón repetido para cargar y guardar datos (Inventario, Usuarios, Proveedores, Historial).
+
+interface Repositorio<T, ID>: Se podría definir una interfaz genérica para las operaciones CRUD básicas si la estructura de datos y las operaciones son muy similares.
+void guardar(T entidad);
+Optional<T> buscarPorId(ID id);
+List<T> buscarTodos();
+void eliminar(ID id);
+void guardarTodo(Collection<T> entidades); // O específico para cada repo
+Interfaces Específicas: Una opción más simple y quizás más práctica aquí es tener interfaces específicas para cada repositorio, ya que las estructuras de datos (Map vs List) y las operaciones (exportar/importar) varían.
+interface IInventarioRepository { Map<String, List<Productos>> cargar(); void guardar(Map<String, List<Productos>> inventario); /* ... exportar, importar */ }
+interface IUsuarioRepository { Map<String, Usuario> cargar(); void guardar(Map<String, Usuario> usuarios); } // Asumiendo una clase Usuario
+interface IProveedorRepository { List<Proveedor> cargar(); void guardar(List<Proveedor> proveedores); }
+interface IHistorialRepository { List<String> cargar(); void guardar(List<String> historial); }
+Beneficio: Desacopla la lógica de negocio de la implementación específica de persistencia (archivos CSV, JSON, base de datos, etc.). Facilita las pruebas unitarias usando Mocks.
+Interfaz de Usuario: Para desacoplar la lógica de la consola.
+
+interface InterfazUsuario:
+void mostrarMensaje(String mensaje);
+String leerTexto(String prompt);
+int leerEntero(String prompt);
+double leerDouble(String prompt);
+OpcionMenu mostrarMenuPrincipal(boolean isAdmin); // OpcionMenu es un Enum
+Credenciales solicitarCredenciales(); // Devuelve usuario/contraseña
+Producto solicitarDatosProducto();
+Proveedor solicitarDatosProveedor();
+void mostrarInventario(Map<String, List<Productos>> inventario);
+void mostrarProveedores(List<Proveedor> proveedores);
+// ... otros métodos para mostrar/recibir datos
+class InterfazUsuarioConsola implements InterfazUsuario: Implementaría estos métodos usando System.out.println y Scanner. Aquí residirían las validaciones de entrada.
+Beneficio: Permite cambiar fácilmente la interfaz (ej. a una GUI) sin tocar la lógica de negocio. Facilita las pruebas.
+Reportes: Si se anticipan más tipos de reportes.
+
+interface GeneradorReporte<T>:
+void generar(T datos, String rutaArchivo); // O simplemente devolver un String/objeto Reporte
+class ReporteInventario implements GeneradorReporte<Map<String, List<Productos>>>
+Beneficio: Estandariza la forma de generar reportes.
+Resumen de Clases Refactorizadas (Conceptuales):
+
+SistemaDeGestionInventarios: Orquestador principal. Usa InterfazUsuario, Autenticador, GestionInventario, GestionProveedores, GestionHistorial.
+InterfazUsuario (Interface): Define cómo interactuar con el usuario.
+InterfazUsuarioConsola (Class): Implementación con Scanner. Contiene validaciones de entrada.
+Productos (Class): Datos del producto.
+Proveedor (Class): Datos del proveedor.
+Usuario (Class): Datos del usuario (nombre, hash de contraseña, rol/admin). Nueva clase sugerida.
+Autenticador (Class): Lógica de inicio de sesión. Usa IUsuarioRepository.
+GestionUsuarios (Class): Lógica CRUD para usuarios. Usa IUsuarioRepository.
+GestionInventario (Class): Lógica de negocio del inventario. Usa IInventarioRepository, Productos. Coordina con ReporteDeInventario, AlertaStock.
+GestionProveedores (Class): Lógica de negocio de proveedores. Usa IProveedorRepository, Proveedor.
+GestionHistorial (Class): Lógica del historial. Usa IHistorialRepository.
+IInventarioRepository (Interface): Contrato para persistencia de inventario.
+InventarioRepositoryArchivo (Class): Implementación con archivos.
+IUsuarioRepository (Interface): Contrato para persistencia de usuarios.
+UsuarioRepositoryArchivo (Class): Implementación con archivos.
+IProveedorRepository (Interface): Contrato para persistencia de proveedores.
+ProveedorRepositoryArchivo (Class): Implementación con archivos.
+IHistorialRepository (Interface): Contrato para persistencia de historial.
+HistorialRepositoryArchivo (Class): Implementación con archivos.
+ReporteDeInventario (Class): Genera reporte de inventario. Podría implementar GeneradorReporte.
+AlertaStock (Class): Verifica stock bajo.
+Aplicar estos cambios resultará en un diseño más modular, mantenible, testeable y flexible, alineado con el Principio de Responsabilidad Única y aprovechando las ventajas del desacoplamiento mediante interfaces.
