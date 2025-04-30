@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*; 
 
 // Clase para representar los productos en el inventario y sus atributos (nombre, categoría, cantidad y precio)
-class Productos implements Serializable { 
+class Producto implements Serializable { 
     private static final long serialVersionUID = 1L;
     private String nombre; 
     private String categoria; 
@@ -14,7 +14,7 @@ class Productos implements Serializable {
     private double precio; 
 
     // Constructor de la clase Productos
-    public Productos(String nombre, String categoria, int cantidad, double precio) {
+    public Producto(String nombre, String categoria, int cantidad, double precio) {
         this.nombre = nombre; 
         this.categoria = categoria; 
         this.cantidad = cantidad; 
@@ -100,7 +100,7 @@ class Productos implements Serializable {
             System.out.print("Ingrese el precio del producto: ");
             double precio = Validaciones.leerDoublePositivo(scanner, "Ingrese un número válido para el precio.");
     
-            Productos nuevoProducto = new Productos(nombre, categoria, cantidad, precio);
+            Producto nuevoProducto = new Producto(nombre, categoria, cantidad, precio);
             controlStock.agregarProducto(nuevoProducto);
             System.out.println("Producto agregado correctamente.");
     
