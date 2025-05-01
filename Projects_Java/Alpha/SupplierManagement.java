@@ -140,7 +140,8 @@ class SupplierRepository {
     public SupplierRepository() {
         cargarProveedores();
     }
-
+  
+    
     @SuppressWarnings("unchecked")
     public void cargarProveedores() {
         if (!archivoProveedores.exists()) {
