@@ -9,10 +9,11 @@ public class UserManagement { // Clase para manejar el registro y autenticación
     private final UserRepository userRepository; // Repositorio para manejar la persistencia de usuarios
     private Map<String, String> usuarios = new HashMap<>(); // Mapa para almacenar los usuarios y sus contraseñas
     private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();  // Mapa para almacenar los usuarios y sus roles (administrador o normal)
-    
+    private final UserAuthentication userAuthentication; // Instancia de la clase UserAuthentication para manejar el inicio de sesión
 
     public UserManagement() { // Constructor de la clase UserManagement
         this.userRepository = new UserRepository(); 
+        this.userAuthentication = new UserAuthentication(this); // Inicializa la autenticación de usuarios
         cargarUsuarios(); // Sincronizar los mapas al inicializar
     }
 
@@ -21,27 +22,11 @@ public class UserManagement { // Clase para manejar el registro y autenticación
         this.jerarquiaUsuarios = userRepository.getJerarquiaUsuarios(); // Obtener la jerarquía de usuarios del repositorio
     }
     
-    public String iniciarSesion(Scanner scanner) { // Método para iniciar sesión en el sistema
-        while (true) {
-            userRepository.cargarUsuarios(); // Cargar los usuarios desde el archivo al iniciar sesión
-            System.out.println("\n=== LOGIN ===");
-            System.out.print("Ingrese su nombre de usuario: ");
-            String usuario = scanner.nextLine();
-            System.out.print("Ingrese su contraseña: ");
-            String contrasena = scanner.nextLine();
-
-            if (usuarios.containsKey(usuario) && usuarios.get(usuario).equals(contrasena)) { 
-                if (jerarquiaUsuarios.getOrDefault(usuario, false)) {
-                    System.out.println("Has iniciado sesión como administrador.");
-                } else {
-                    System.out.println("¡Bienvenido, " + usuario + "!");
-                }
-                return usuario; 
-            } else {
-                System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
-            }
-        }
+    public Map<String, String> getUsuarios() { // Método para obtener el mapa de usuarios
+        return usuarios;
     }
+
+    
 
     
     public void registrarUsuario(Scanner scanner) { // Método para registrar un nuevo usuario en el sistema
@@ -106,7 +91,7 @@ public class UserManagement { // Clase para manejar el registro y autenticación
 
             switch (opcion) {
                 case "1":
-                    return iniciarSesion(scanner); 
+                    return userAuthentication.iniciarSesion(scanner); 
                 case "2":
                     registrarUsuario(scanner);
                     break;
@@ -171,6 +156,40 @@ public class UserManagement { // Clase para manejar el registro y autenticación
 }
 
 /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+class UserAuthentication {
+    private final UserManagement userManagement;
+
+    public UserAuthentication(UserManagement userManagement) {
+        this.userManagement = userManagement;
+    }
+
+    public String iniciarSesion(Scanner scanner) { // Método para iniciar sesión
+        while (true) {
+            System.out.println("\n=== LOGIN ===");
+            System.out.print("Ingrese su nombre de usuario: ");
+            String usuario = scanner.nextLine();
+            System.out.print("Ingrese su contraseña: ");
+            String contrasena = scanner.nextLine();
+
+            if (userManagement.getUsuarios().containsKey(usuario) &&
+                userManagement.getUsuarios().get(usuario).equals(contrasena)) {
+                if (userManagement.esUsuarioAdmin(usuario)) {
+                    System.out.println("Has iniciado sesión como administrador.");
+                } else {
+                    System.out.println("¡Bienvenido, " + usuario + "!");
+                }
+                return usuario;
+            } else {
+                System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
+            }
+        }
+    }
+}
+
+ /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
  /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
  /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
