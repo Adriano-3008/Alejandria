@@ -232,24 +232,24 @@ class InventorySearch{
 /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 class InventarioRepository {
-    private final File archivo;
+    private final File archivoInventario;
 
     public InventarioRepository(File archivo) {
-        this.archivo = archivo;
+        this.archivoInventario = new File("Projects_Java/Archivo_Proyecto_Alpha/.dats/Archivo_Inventario.dat");
     }
 
     @SuppressWarnings("unchecked")
     public Map<String, List<Producto>> cargarInventario() {
         Map<String, List<Producto>> productosPorCategoria = new HashMap<>();
         try {
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                archivo.createNewFile();
-                System.out.println("El archivo de inventario no existía. Se ha creado un nuevo archivo en: " + archivo.getAbsolutePath());
+            if (!archivoInventario.exists()) {
+                archivoInventario.getParentFile().mkdirs();
+                archivoInventario.createNewFile();
+                System.out.println("El archivo de inventario no existía. Se ha creado un nuevo archivo en: " + archivoInventario.getAbsolutePath());
                 return productosPorCategoria;
             }
 
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoInventario))) {
                 Object obj = ois.readObject();
                 if (obj instanceof Map<?, ?>) {
                     productosPorCategoria = (Map<String, List<Producto>>) obj;
@@ -265,12 +265,12 @@ class InventarioRepository {
 
     public void guardarInventario(Map<String, List<Producto>> productosPorCategoria) {
         try {
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                archivo.createNewFile();
+            if (!archivoInventario.exists()) {
+                archivoInventario.getParentFile().mkdirs();
+                archivoInventario.createNewFile();
             }
 
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivo))) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoInventario))) {
                 oos.writeObject(productosPorCategoria);
             }
         } catch (IOException e) {

@@ -9,6 +9,7 @@ public class UserManagement { // Clase para manejar el registro y autenticación
     private final UserRepository userRepository; // Repositorio para manejar la persistencia de usuarios
     private Map<String, String> usuarios = new HashMap<>(); // Mapa para almacenar los usuarios y sus contraseñas
     private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();  // Mapa para almacenar los usuarios y sus roles (administrador o normal)
+    
 
     public UserManagement() { // Constructor de la clase UserManagement
         this.userRepository = new UserRepository(); 
@@ -174,7 +175,7 @@ public class UserManagement { // Clase para manejar el registro y autenticación
  /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 class UserRepository {
-    private final File archivoUsuarios = new File("Alpha/Archivo_Proyecto/usuarios.dat");
+    private final File archivoUsuarios = new File("Projects_Java/Archivo_Proyecto_Alpha/.dats/Archivo_Usuarios.dat"); // Ruta del archivo para almacenar los usuarios
     private Map<String, String> usuarios = new HashMap<>();
     private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();
 
