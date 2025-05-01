@@ -87,8 +87,8 @@ public class ReporteDeInventario { // Clase para generar reportes detallados del
         }
     }
 
-    public void generarReporte(ControlStock controlStock) { // Método para generar un reporte detallado del inventario
-        Map<String, List<Productos>> productosPorCategoria = controlStock.getProductosPorCategoria(); // Obtener los productos por categoría del inventario actual
+    public void generarReporte(InventoryManagement controlStock) { // Método para generar un reporte detallado del inventario
+        Map<String, List<Producto>> productosPorCategoria = controlStock.getProductosPorCategoria(); // Obtener los productos por categoría del inventario actual
     
         if (productosPorCategoria.isEmpty()) {
             System.out.println("El inventario está vacío. No hay datos para generar el reporte.");
@@ -100,7 +100,7 @@ public class ReporteDeInventario { // Clase para generar reportes detallados del
         System.out.println("\n=== Reporte Detallado del Inventario ===");
         for (var entry : productosPorCategoria.entrySet()) {
             String categoria = entry.getKey();
-            List<Productos> productos = entry.getValue();
+            List<Producto> productos = entry.getValue();
     
             System.out.println("\nCategoría: " + categoria);
 
@@ -118,7 +118,7 @@ public class ReporteDeInventario { // Clase para generar reportes detallados del
 
             String formatoFila = "| %-" + anchoProducto + "s | %-" + anchoCantidad + "d | %-" + anchoPrecio + "s | %-" + anchoValorTotal + "s |\n";
             double valorTotalCategoria = 0.0;
-            for (Productos producto : productos) {
+            for (Producto producto : productos) {
                 String precioFormateado = String.format("$%,.2f", producto.getPrecio());
                 String valorTotalFormateado = String.format("$%,.2f", producto.getCantidad() * producto.getPrecio());
                 System.out.printf(formatoFila, producto.getNombre(), producto.getCantidad(), precioFormateado, valorTotalFormateado);

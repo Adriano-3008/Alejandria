@@ -7,12 +7,12 @@ import java.io.*;
 import java.util.*; 
 
 // Clase para controlar el inventario de productos y sus operaciones (agregar, modificar, eliminar, buscar, etc.)
-public class ControlStock {
-    private Map<String, List<Productos>> productosPorCategoria = new HashMap<>();
+public class InventoryManagement {
+    private Map<String, List<Producto>> productosPorCategoria = new HashMap<>();
     private alertaStock alerta = new alertaStock();
     private ArchivoCSV archivoCSV = new ArchivoCSV();
 
-    public void agregarProducto(Productos producto) {
+    public void agregarProducto(Producto producto) {
         productosPorCategoria.computeIfAbsent(producto.getCategoria(), k -> new ArrayList<>()).add(producto);
     
         // Registrar el ingreso
@@ -52,7 +52,7 @@ public class ControlStock {
     
         for (var entry : productosPorCategoria.entrySet()) {
             String categoria = entry.getKey();
-            List<Productos> productos = entry.getValue();
+            List<Producto> productos = entry.getValue();
     
             System.out.println("\nCategoría: " + categoria);
     
@@ -69,7 +69,7 @@ public class ControlStock {
             System.out.println(separador);
     
             String formatoFila = "| %-" + anchoProducto + "s | %-" + anchoCantidad + "d | %-" + anchoPrecio + "s | %-" + anchoValorTotal + "s |\n";
-            for (Productos p : productos) {
+            for (Producto p : productos) {
                 String precioFormateado = String.format("$%,.2f", p.getPrecio());
                 String valorTotalFormateado = String.format("$%,.2f", p.getCantidad() * p.getPrecio());
                 System.out.printf(formatoFila, p.getNombre(), p.getCantidad(), precioFormateado, valorTotalFormateado);
@@ -80,7 +80,7 @@ public class ControlStock {
     }
 
      // Método para buscar un producto por su nombre y categoría en el inventario
-    public Productos buscarProducto(String categoria, String nombreProducto) { 
+    public Producto buscarProducto(String categoria, String nombreProducto) { 
         return productosPorCategoria.getOrDefault(categoria, new ArrayList<>())
                 .stream()
                 .filter(p -> p.getNombre().equalsIgnoreCase(nombreProducto))
@@ -95,7 +95,7 @@ public class ControlStock {
         System.out.print("Ingrese el nombre del producto: ");
         String nombreProducto = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
     
-        Productos producto = buscarProducto(categoria, nombreProducto);
+        Producto producto = buscarProducto(categoria, nombreProducto);
         if (producto != null) {
             System.out.print("Ingrese la nueva cantidad: ");
             int nuevaCantidad = Validaciones.leerEnteroPositivo(scanner, "Ingrese un número válido para la cantidad.");
@@ -121,7 +121,7 @@ public class ControlStock {
         System.out.print("Ingrese el nombre del producto: ");
         String nombreProducto = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
 
-        Productos producto = buscarProducto(categoria, nombreProducto);
+        Producto producto = buscarProducto(categoria, nombreProducto);
         if (producto != null) {
             System.out.print("Ingrese el nuevo precio: ");
             double nuevoPrecio = Validaciones.leerDoublePositivo(scanner, "Ingrese un número válido para el precio.");
@@ -143,7 +143,7 @@ public class ControlStock {
         System.out.print("Ingrese el nombre del producto: ");
         String nombreProducto = scanner.nextLine();
     
-        List<Productos> productos = productosPorCategoria.get(categoria);
+        List<Producto> productos = productosPorCategoria.get(categoria);
         if (productos != null && productos.removeIf(p -> p.getNombre().equalsIgnoreCase(nombreProducto))) {
             String detalle = "Retiro total: Producto eliminado del inventario.";
             reporte.registrarCambio("Eliminar Producto", categoria, nombreProducto, detalle);
@@ -172,7 +172,7 @@ public class ControlStock {
         boolean encontrado = false;
         System.out.println("\n=== Resultados de la búsqueda por nombre ===");
         for (var entry : productosPorCategoria.entrySet()) {
-            for (Productos p : entry.getValue()) {
+            for (Producto p : entry.getValue()) {
                 if (p.getNombre().equalsIgnoreCase(nombreProducto)) {
                     System.out.printf("Categoría: %s | Producto: %s | Cantidad: %d | Precio: $%.2f\n",
                             entry.getKey(), p.getNombre(), p.getCantidad(), p.getPrecio());
@@ -187,10 +187,10 @@ public class ControlStock {
 
     // Método para buscar productos por categoría  en el inventario
     public void buscarPorCategoria(String categoria) { 
-        List<Productos> productos = productosPorCategoria.get(categoria);
+        List<Producto> productos = productosPorCategoria.get(categoria);
         if (productos != null && !productos.isEmpty()) {
             System.out.println("\n=== Productos en la categoría: " + categoria + " ===");
-            for (Productos p : productos) {
+            for (Producto p : productos) {
                 System.out.printf("Producto: %s | Cantidad: %d | Precio: $%.2f\n",
                         p.getNombre(), p.getCantidad(), p.getPrecio());
             }
@@ -208,7 +208,7 @@ public class ControlStock {
     }
 
     // Método para obtener los productos por categoría en el inventario
-    public Map<String, List<Productos>> getProductosPorCategoria() { 
+    public Map<String, List<Producto>> getProductosPorCategoria() { 
         return productosPorCategoria;
     }
 
@@ -229,8 +229,8 @@ class InventarioRepository {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, List<Productos>> cargarInventario() {
-        Map<String, List<Productos>> productosPorCategoria = new HashMap<>();
+    public Map<String, List<Producto>> cargarInventario() {
+        Map<String, List<Producto>> productosPorCategoria = new HashMap<>();
         try {
             if (!archivo.exists()) {
                 archivo.getParentFile().mkdirs();
@@ -242,7 +242,7 @@ class InventarioRepository {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
                 Object obj = ois.readObject();
                 if (obj instanceof Map<?, ?>) {
-                    productosPorCategoria = (Map<String, List<Productos>>) obj;
+                    productosPorCategoria = (Map<String, List<Producto>>) obj;
                 } else {
                     System.out.println("El archivo no contiene un formato válido de inventario.");
                 }
@@ -253,7 +253,7 @@ class InventarioRepository {
         return productosPorCategoria;
     }
 
-    public void guardarInventario(Map<String, List<Productos>> productosPorCategoria) {
+    public void guardarInventario(Map<String, List<Producto>> productosPorCategoria) {
         try {
             if (!archivo.exists()) {
                 archivo.getParentFile().mkdirs();
@@ -271,12 +271,12 @@ class InventarioRepository {
 
 class ArchivoCSV {
 
-    public void exportar(File archivoCSV, Map<String, List<Productos>> productosPorCategoria) {
+    public void exportar(File archivoCSV, Map<String, List<Producto>> productosPorCategoria) {
         try (BufferedWriter writer = Files.newBufferedWriter(archivoCSV.toPath())) {
             writer.write("Categoría,Producto,Cantidad,Precio\n"); // Encabezado del archivo CSV
             for (var entry : productosPorCategoria.entrySet()) {
                 String categoria = entry.getKey();
-                for (Productos producto : entry.getValue()) {
+                for (Producto producto : entry.getValue()) {
                     writer.write(String.format("%s,%s,%d,%.2f\n",
                             categoria, producto.getNombre(), producto.getCantidad(), producto.getPrecio()));
                 }
@@ -287,7 +287,7 @@ class ArchivoCSV {
         }
     }
 
-    public void importar(File archivoCSV, Map<String, List<Productos>> productosPorCategoria, ControlStock controlStock) {
+    public void importar(File archivoCSV, Map<String, List<Producto>> productosPorCategoria, InventoryManagement controlStock) {
         if (!archivoCSV.exists()) {
             System.out.println("El archivo CSV especificado no existe en: " + archivoCSV.getAbsolutePath());
             return;
@@ -310,7 +310,7 @@ class ArchivoCSV {
                         double precio = Double.parseDouble(datos[3].trim());
 
                         // Verificar si el producto ya existe
-                        Productos productoExistente = controlStock.buscarProducto(categoria, nombre);
+                        Producto productoExistente = controlStock.buscarProducto(categoria, nombre);
                         if (productoExistente != null) {
                             // Actualizar cantidad y precio del producto existente
                             productoExistente.setCantidad(productoExistente.getCantidad() + cantidad);
@@ -319,7 +319,7 @@ class ArchivoCSV {
                                     categoria, nombre, productoExistente.getCantidad(), precio);
                         } else {
                             // Agregar nuevo producto
-                            Productos nuevoProducto = new Productos(nombre, categoria, cantidad, precio);
+                            Producto nuevoProducto = new Producto(nombre, categoria, cantidad, precio);
                             controlStock.agregarProducto(nuevoProducto);
                             System.out.printf("Producto importado: Categoría='%s', Nombre='%s', Cantidad=%d, Precio=%.2f\n",
                                     categoria, nombre, cantidad, precio);
@@ -343,13 +343,13 @@ class alertaStock {
     public static final int LIMITE_STOCK_BAJO = 20; // Límite de stock bajo para mostrar la alerta
 
     // Método para verificar si hay productos con stock bajo
-    public void verificarStockBajo(Map<String, List<Productos>> productosPorCategoria) { 
+    public void verificarStockBajo(Map<String, List<Producto>> productosPorCategoria) { 
         boolean hayStockBajo = false;
         StringBuilder alerta = new StringBuilder("\n=== ALERTA: Productos con stock bajo ===\n");
 
         for (var entry : productosPorCategoria.entrySet()) {
             String categoria = entry.getKey();
-            for (Productos producto : entry.getValue()) {
+            for (Producto producto : entry.getValue()) {
                 if (producto.getCantidad() < LIMITE_STOCK_BAJO) {
                     hayStockBajo = true;
                     alerta.append(String.format("Categoría: %s | Producto: %s | Stock: %d | Precio: $%.2f\n",

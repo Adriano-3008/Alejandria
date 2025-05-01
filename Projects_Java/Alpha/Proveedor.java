@@ -31,11 +31,11 @@ public class Proveedor implements Serializable{ // Clase para representar un pro
     }
 }
 
-class ControlProveedores { // Clase para controlar los proveedores y sus operaciones (agregar, modificar, eliminar, listar, etc.)
+class ControlProveedor{ // Clase para controlar los proveedores y sus operaciones (agregar, modificar, eliminar, listar, etc.)
     private final File archivoProveedores = new File("Alpha/Archivo_Proyecto/proveedores.dat"); // Ruta del archivo para almacenar los proveedores
     private List<Proveedor> listaProveedores = new ArrayList<>(); // Lista para almacenar los proveedores
 
-    public ControlProveedores() { // Constructor de la clase ControlProveedores
+    public ControlProveedor() { // Constructor de la clase ControlProveedores
         cargarProveedores();
     }
 

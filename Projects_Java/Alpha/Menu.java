@@ -18,20 +18,20 @@ public class Menu { // Clase para mostrar el menú principal de opciones del sis
     public static boolean procesarOpcionInventario( // Método para procesar la opción seleccionada por el usuario en el menú principal
             int opcion,
             Scanner scanner,
-            ControlStock controlStock,
+            InventoryManagement controlStock,
             ReporteDeInventario reporte,
             File archivo,
             Login login,
             boolean esAdmin,
             InventarioRepository inventarioRepository
     ) {
-        ControlProveedores controlProveedores = new ControlProveedores();
+        ControlProveedor controlProveedores = new ControlProveedor();
         switch (opcion) {
             case 1 -> controlStock.mostrarInventario();
             case 2 -> MenuInventario.mostrarSubmenuInventario(scanner, controlStock, reporte);
             case 3 -> MenuBusqueda.mostrarSubmenuBusqueda(scanner, controlStock);
             case 4 -> MenuReportes.mostrarSubmenuReportes(scanner, controlStock, reporte);
-            case 5 -> MenuProveedores.mostrarSubmenuProveedores(scanner, controlProveedores);
+            case 5 -> MenuProveedor.mostrarSubmenuProveedor(scanner, controlProveedores);
             case 6 -> {
                 controlStock.guardarInventario(inventarioRepository);
                 System.out.println("Sesión cerrada. ¡Hasta luego!");
@@ -47,7 +47,7 @@ public class Menu { // Clase para mostrar el menú principal de opciones del sis
 
 class MenuInventario { // Clase para mostrar el menú de opciones relacionadas con el inventario y sus operaciones
 
-    public static void mostrarSubmenuInventario(Scanner scanner, ControlStock controlStock, ReporteDeInventario reporte) { // Método para mostrar el menú de opciones del inventario 
+    public static void mostrarSubmenuInventario(Scanner scanner, InventoryManagement inventory_Management, ReporteDeInventario reporte) { // Método para mostrar el menú de opciones del inventario 
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== MODIFICACIONES DE INVENTARIO ===");
@@ -63,23 +63,23 @@ class MenuInventario { // Clase para mostrar el menú de opciones relacionadas c
             System.out.print("Seleccione una opción: ");
             int opcionModificacion = Integer.parseInt(scanner.nextLine());
             switch (opcionModificacion) {
-                case 1 -> SistemaDeGestionDeInventarios.agregarCategoria(scanner, controlStock);
-                case 2 -> SistemaDeGestionDeInventarios.agregarProductos(scanner, controlStock, reporte);
-                case 3 -> controlStock.modificarCantidad(scanner, reporte);
-                case 4 -> controlStock.modificarPrecio(scanner, reporte);
-                case 5 -> controlStock.eliminarProducto(scanner, reporte);
-                case 6 -> controlStock.eliminarCategoria(scanner, reporte);
+                case 1 -> SistemaDeGestionDeInventarios.agregarCategoria(scanner, inventory_Management);
+                case 2 -> SistemaDeGestionDeInventarios.agregarProductos(scanner, inventory_Management, reporte);
+                case 3 -> inventory_Management.modificarCantidad(scanner, reporte);
+                case 4 -> inventory_Management.modificarPrecio(scanner, reporte);
+                case 5 -> inventory_Management.eliminarProducto(scanner, reporte);
+                case 6 -> inventory_Management.eliminarCategoria(scanner, reporte);
                 case 7 -> {
                     System.out.print("Ingrese el nombre del archivo CSV para exportar (por ejemplo, 'Alpha/Archivo_Proyecto/inventario.csv'): ");
                     String nombreArchivo = scanner.nextLine();
                     File archivoCSV = new File(nombreArchivo);
-                    controlStock.exportarInventario(archivoCSV);
+                    inventory_Management.exportarInventario(archivoCSV);
                 }
                 case 8 -> {
                     System.out.print("Ingrese el nombre del archivo CSV para importar (por ejemplo, 'Alpha/Archivo_Proyecto/inventario.csv'): ");
                     String nombreArchivo = scanner.nextLine();
                     File archivoCSV = new File(nombreArchivo);
-                    controlStock.importarInventario(archivoCSV);
+                    inventory_Management.importarInventario(archivoCSV);
                 }
                 case 9 -> {
                     regresarAlMenu = true;
@@ -95,7 +95,7 @@ class MenuInventario { // Clase para mostrar el menú de opciones relacionadas c
 
 class MenuBusqueda { // Clase para mostrar el menú de opciones relacionadas con la búsqueda de productos en el inventario
 
-    public static void mostrarSubmenuBusqueda(Scanner scanner, ControlStock controlStock) { // Método para mostrar el menú de opciones de búsqueda
+    public static void mostrarSubmenuBusqueda(Scanner scanner, InventoryManagement inventory_Management) { // Método para mostrar el menú de opciones de búsqueda
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== BÚSQUEDA EN INVENTARIO ===");
@@ -107,12 +107,12 @@ class MenuBusqueda { // Clase para mostrar el menú de opciones relacionadas con
             switch (opcionBusqueda) {
                 case 1 -> {
                     System.out.print("Ingrese la categoría a buscar: ");
-                    controlStock.buscarPorCategoria(scanner.nextLine());
+                    inventory_Management.buscarPorCategoria(scanner.nextLine());
                 }
                 case 2 -> {
                     System.out.print("Ingrese el nombre del producto a buscar: ");
                     String nombreProducto = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
-                    controlStock.buscarPorNombre(nombreProducto);
+                    inventory_Management.buscarPorNombre(nombreProducto);
                 }
                 case 3 -> {
                     regresarAlMenu = true;
@@ -128,7 +128,7 @@ class MenuBusqueda { // Clase para mostrar el menú de opciones relacionadas con
 
 class MenuReportes { // Clase para mostrar el menú de opciones relacionadas con los reportes del inventario
 
-    public static void mostrarSubmenuReportes(Scanner scanner, ControlStock controlStock, ReporteDeInventario reporte) { // Método para mostrar el menú de opciones de reportes 
+    public static void mostrarSubmenuReportes(Scanner scanner, InventoryManagement inventory_Management, ReporteDeInventario reporte) { // Método para mostrar el menú de opciones de reportes 
         boolean regresarAlMenu = false; 
         while (!regresarAlMenu) {
             System.out.println("\n=== REPORTES ===");
@@ -138,7 +138,7 @@ class MenuReportes { // Clase para mostrar el menú de opciones relacionadas con
             System.out.print("Seleccione una opción: ");
             int opcionReporte = Integer.parseInt(scanner.nextLine());
             switch (opcionReporte) {
-                case 1 -> reporte.generarReporte(controlStock);
+                case 1 -> reporte.generarReporte(inventory_Management);
                 case 2 -> reporte.mostrarRegistroDeCambios(scanner);
                 case 3 -> {
                     regresarAlMenu = true;
@@ -150,9 +150,9 @@ class MenuReportes { // Clase para mostrar el menú de opciones relacionadas con
     }
 }
 
-class MenuProveedores { // Clase para mostrar el menú de opciones relacionadas con la gestión de proveedores
+class MenuProveedor { // Clase para mostrar el menú de opciones relacionadas con la gestión de proveedores
 
-    public static void mostrarSubmenuProveedores(Scanner scanner, ControlProveedores controlProveedores) { // Método para mostrar el menú de opciones de gestión de proveedores
+    public static void mostrarSubmenuProveedor(Scanner scanner, ControlProveedor controlProveedores) { // Método para mostrar el menú de opciones de gestión de proveedores
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== GESTIÓN DE PROVEEDORES ===");

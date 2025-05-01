@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*; 
 
 // Clase para representar los productos en el inventario y sus atributos (nombre, categoría, cantidad y precio)
-class Productos implements Serializable { 
+class Producto implements Serializable { 
     private static final long serialVersionUID = 1L;
     private String nombre; 
     private String categoria; 
@@ -14,7 +14,7 @@ class Productos implements Serializable {
     private double precio; 
 
     // Constructor de la clase Productos
-    public Productos(String nombre, String categoria, int cantidad, double precio) {
+    public Producto(String nombre, String categoria, int cantidad, double precio) {
         this.nombre = nombre; 
         this.categoria = categoria; 
         this.cantidad = cantidad; 
@@ -34,7 +34,7 @@ class Productos implements Serializable {
     public static void main(String[] args) { // Método principal para ejecutar el sistema
         Scanner scanner = new Scanner(System.in);
         Login login = new Login();
-        ControlStock controlStock = new ControlStock();
+        InventoryManagement inventory_Management = new InventoryManagement();
         File archivoInventario = new File("Alpha/Archivo_Proyecto/inventario.dat");
         InventarioRepository inventarioRepository = new InventarioRepository(archivoInventario);
         ReporteDeInventario reporte = new ReporteDeInventario();
@@ -42,16 +42,16 @@ class Productos implements Serializable {
         boolean salirSistema = false;
         while (!salirSistema) {
             String usuarioLogueado = manejarLogin(scanner, login);
-            controlStock.cargarInventario(inventarioRepository);
+            inventory_Management.cargarInventario(inventarioRepository);
 
             boolean cerrarSesion = false;
             boolean esAdmin = login.esUsuarioAdmin(usuarioLogueado);
             while (!cerrarSesion) {
                 mostrarMenu(esAdmin);
-                cerrarSesion = procesarOpcion(scanner, controlStock, reporte, archivoInventario, login, esAdmin, inventarioRepository);
+                cerrarSesion = procesarOpcion(scanner, inventory_Management, reporte, archivoInventario, login, esAdmin, inventarioRepository);
             }
 
-            controlStock.guardarInventario(inventarioRepository);
+            inventory_Management.guardarInventario(inventarioRepository);
         }
 
         scanner.close();
@@ -65,7 +65,7 @@ class Productos implements Serializable {
         Menu.mostrarMenuInventario(esAdmin);
     }
     //---------------------------------------------------------
-    public static boolean procesarOpcion(Scanner scanner, ControlStock controlStock, ReporteDeInventario reporte, File archivoInventario, Login login, boolean esAdmin, InventarioRepository inventarioRepository) {
+    public static boolean procesarOpcion(Scanner scanner, InventoryManagement controlStock, ReporteDeInventario reporte, File archivoInventario, Login login, boolean esAdmin, InventarioRepository inventarioRepository) {
         try {
             System.out.print("Seleccione una opción: ");
             int opcion = Integer.parseInt(scanner.nextLine());
@@ -76,13 +76,13 @@ class Productos implements Serializable {
         }
     }
     // Método para agregar una nueva categoría al inventario
-    public static void agregarCategoria(Scanner scanner, ControlStock controlStock) {
+    public static void agregarCategoria(Scanner scanner, InventoryManagement controlStock) {
         System.out.print("Ingrese el nombre de la nueva categoría: ");
         String categoria = Validaciones.leerTextoNoVacio(scanner, "El nombre de la categoría no puede estar vacío. Intente nuevamente.");
         controlStock.agregarCategoria(categoria);
     }
     // Método para agregar productos a una categoría del inventario
-    public static void agregarProductos(Scanner scanner, ControlStock controlStock, ReporteDeInventario reporte) {
+    public static void agregarProductos(Scanner scanner, InventoryManagement controlStock, ReporteDeInventario reporte) {
         System.out.print("Ingrese la categoría del producto: ");
         String categoria = Validaciones.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
     
@@ -100,7 +100,7 @@ class Productos implements Serializable {
             System.out.print("Ingrese el precio del producto: ");
             double precio = Validaciones.leerDoublePositivo(scanner, "Ingrese un número válido para el precio.");
     
-            Productos nuevoProducto = new Productos(nombre, categoria, cantidad, precio);
+            Producto nuevoProducto = new Producto(nombre, categoria, cantidad, precio);
             controlStock.agregarProducto(nuevoProducto);
             System.out.println("Producto agregado correctamente.");
     
