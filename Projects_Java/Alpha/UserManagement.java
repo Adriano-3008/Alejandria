@@ -4,13 +4,13 @@ import java.io.*;
 // Import necesario para trabajar con colecciones y Scanner
 import java.util.*; 
 
-public class Login { // Clase para manejar el inicio de sesión de los usuarios y sus operaciones (iniciar sesión, registrar usuario, borrar usuario, etc.)
+public class UserManagement { // Clase para manejar el inicio de sesión de los usuarios y sus operaciones (iniciar sesión, registrar usuario, borrar usuario, etc.)
 
     private final File archivoUsuarios = new File("Alpha/Archivo_Proyecto/usuarios.dat"); // Ruta del archivo para almacenar los usuarios y contraseñas
     private Map<String, String> usuarios = new HashMap<>(); // Mapa para almacenar los usuarios y sus contraseñas
     private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();  // Mapa para almacenar los usuarios y sus roles (administrador o normal)
 
-    public Login() {// Constructor de la clase Login
+    public UserManagement() {// Constructor de la clase Login
         cargarUsuarios(); // Cargar los usuarios y contraseñas desde el archivo
     }
 

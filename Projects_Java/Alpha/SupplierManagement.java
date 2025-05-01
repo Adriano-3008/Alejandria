@@ -2,15 +2,15 @@ package Alpha;
 // Import necesario para trabajar con archivos y flujos de entrada/salida de datos (I/O)
 import java.io.*; 
 // Import necesario para trabajar con colecciones y Scanner
-import java.util.*; 
+import java.util.*;
 
-public class Proveedor implements Serializable{ // Clase para representar un proveedor
+class Supplier implements Serializable{ // Clase para representar un proveedor
     private static final long serialVersionUID = 1L;
     private String nombre;
     private String contacto;
     private String productosSuministrados;
 
-    public Proveedor(String nombre, String contacto, String productosSuministrados) { // Constructor de la clase Proveedor
+    public Supplier(String nombre, String contacto, String productosSuministrados) { // Constructor de la clase Proveedor
         this.nombre = nombre;
         this.contacto = contacto;
         this.productosSuministrados = productosSuministrados;
@@ -31,36 +31,36 @@ public class Proveedor implements Serializable{ // Clase para representar un pro
     }
 }
 
-class ControlProveedor{ // Clase para controlar los proveedores y sus operaciones (agregar, modificar, eliminar, listar, etc.)
+public class SupplierManagement{ // Clase para controlar los proveedores y sus operaciones (agregar, modificar, eliminar, listar, etc.)
     private final File archivoProveedores = new File("Alpha/Archivo_Proyecto/proveedores.dat"); // Ruta del archivo para almacenar los proveedores
-    private List<Proveedor> listaProveedores = new ArrayList<>(); // Lista para almacenar los proveedores
+    private List<Supplier> listSupplier = new ArrayList<>(); // Lista para almacenar los proveedores
 
-    public ControlProveedor() { // Constructor de la clase ControlProveedores
+    public SupplierManagement() { // Constructor de la clase ControlProveedores
         cargarProveedores();
     }
 
     public void agregarProveedor(Scanner scanner) { // Método para agregar un nuevo proveedor
         System.out.println("\n=== REGISTRAR NUEVO PROVEEDOR ===");
         System.out.print("Ingrese el nombre del proveedor: ");
-        String nombre = Validaciones.leerTextoNoVacio(scanner, "El nombre no puede estar vacío.");
+        String nombre = Validation.leerTextoNoVacio(scanner, "El nombre no puede estar vacío.");
         System.out.print("Ingrese el contacto del proveedor: ");
-        String contacto = Validaciones.leerTextoNoVacio(scanner, "El contacto no puede estar vacío.");
+        String contacto = Validation.leerTextoNoVacio(scanner, "El contacto no puede estar vacío.");
         System.out.print("Ingrese los productos suministrados por el proveedor: ");
-        String productos = Validaciones.leerTextoNoVacio(scanner, "Los productos no pueden estar vacíos.");
+        String productos = Validation.leerTextoNoVacio(scanner, "Los productos no pueden estar vacíos.");
 
-        Proveedor nuevoProveedor = new Proveedor(nombre, contacto, productos);
-        listaProveedores.add(nuevoProveedor);
+        Supplier supplier = new Supplier(nombre, contacto, productos);
+        listSupplier.add(supplier);
         guardarProveedores();
         System.out.println("Proveedor registrado exitosamente.");
     }
 
     public void listarProveedores() { // Método para listar los proveedores registrados
         System.out.println("\n=== LISTA DE PROVEEDORES ===");
-        if (listaProveedores.isEmpty()) {
+        if (listSupplier.isEmpty()) {
             System.out.println("No hay proveedores registrados.");
             return;
         }
-        for (Proveedor proveedor : listaProveedores) {
+        for (Supplier proveedor : listSupplier) {
             System.out.println(proveedor);
         }
     }
@@ -75,8 +75,8 @@ class ControlProveedor{ // Clase para controlar los proveedores y sus operacione
         System.out.print("Ingrese el nombre del proveedor que desea modificar: ");
         String nombre = scanner.nextLine();
 
-        Proveedor proveedor = buscarProveedor(nombre);
-        if (proveedor == null) {
+        Supplier supplier = buscarProveedor(nombre);
+        if (supplier == null) {
             System.out.println("Proveedor no encontrado.");
             return;
         }
@@ -84,13 +84,13 @@ class ControlProveedor{ // Clase para controlar los proveedores y sus operacione
         System.out.print("Ingrese el nuevo contacto (deje vacío para no cambiar): ");
         String nuevoContacto = scanner.nextLine();
         if (!nuevoContacto.isEmpty()) {
-            proveedor.setContacto(nuevoContacto);
+            supplier.setContacto(nuevoContacto);
         }
 
         System.out.print("Ingrese los nuevos productos suministrados (deje vacío para no cambiar): ");
         String nuevosProductos = scanner.nextLine();
         if (!nuevosProductos.isEmpty()) {
-            proveedor.setProductosSuministrados(nuevosProductos);
+            supplier.setProductosSuministrados(nuevosProductos);
         }
 
         guardarProveedores();
@@ -103,9 +103,9 @@ class ControlProveedor{ // Clase para controlar los proveedores y sus operacione
         System.out.print("Ingrese el nombre del proveedor que desea eliminar: ");
         String nombre = scanner.nextLine();
 
-        Proveedor proveedor = buscarProveedor(nombre);
-        if (proveedor != null) {
-            listaProveedores.remove(proveedor);
+        Supplier supplier = buscarProveedor(nombre);
+        if (supplier != null) {
+            listSupplier.remove(supplier);
             guardarProveedores();
             System.out.println("Proveedor eliminado exitosamente.");
         } else {
@@ -113,8 +113,8 @@ class ControlProveedor{ // Clase para controlar los proveedores y sus operacione
         }
     }
 
-    public Proveedor buscarProveedor(String nombre) { // Método para buscar un proveedor por su nombre en la lista de proveedores registrados y devolverlo si se encuentra
-        return listaProveedores.stream()
+    public Supplier buscarProveedor(String nombre) { // Método para buscar un proveedor por su nombre en la lista de proveedores registrados y devolverlo si se encuentra
+        return listSupplier.stream()
                 .filter(p -> p.getNombre().equalsIgnoreCase(nombre))
                 .findFirst()
                 .orElse(null);
@@ -125,7 +125,7 @@ class ControlProveedor{ // Clase para controlar los proveedores y sus operacione
             return;
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoProveedores))) { 
-            listaProveedores = (List<Proveedor>) ois.readObject();
+            listSupplier = (List<Supplier>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error al cargar los proveedores: " + e.getMessage());
         }
@@ -133,9 +133,13 @@ class ControlProveedor{ // Clase para controlar los proveedores y sus operacione
 
     public void guardarProveedores() { // Método para guardar los proveedores en el archivo de proveedores
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoProveedores))) {
-            oos.writeObject(listaProveedores);
+            oos.writeObject(listSupplier);
         } catch (IOException e) {
             System.out.println("Error al guardar los proveedores: " + e.getMessage());
         }
     }
+}
+
+class SupplierRepository{
+
 }
