@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Menu { // Clase para mostrar el menú principal de opciones del sistema
 
-    public static void mostrarMenuInventario(boolean esAdmin) { // Método para mostrar el menú principal de opciones
+    public static void showInventoryMenu (boolean esAdmin) { // Método para mostrar el menú principal de opciones
         System.out.println("\n=== MENÚ DE INVENTARIO ===");
         System.out.println("1. Mostrar Inventario");
         System.out.println("2. Modificaciones de Inventario");
@@ -15,25 +15,20 @@ public class Menu { // Clase para mostrar el menú principal de opciones del sis
         System.out.println("5. Gestionar Proveedores");
         System.out.println("6. Cerrar sesión");
     }
-    public static boolean procesarOpcionInventario( // Método para procesar la opción seleccionada por el usuario en el menú principal
-            int opcion,
-            Scanner scanner,
-            InventoryManagement controlStock,
-            InventoryReport reporte,
-            File archivo,
-            UserManagement userManagement,
-            boolean esAdmin,
-            InventarioRepository inventarioRepository
-    ) {
+
+    public static boolean processInventoryOption( // Método para procesar la opción seleccionada por el usuario en el menú principal
+        int opcion, Scanner scanner, InventoryManagement inventoryManagement, InventoryReport reporte, File archivo, UserManagement userManagement, boolean esAdmin, InventarioRepository inventarioRepository
+        ) 
+    {
         SupplierManagement supplierManagement = new SupplierManagement();
         switch (opcion) {
-            case 1 -> controlStock.mostrarInventario();
-            case 2 -> InventoryModificationMenu.mostrarSubmenuInventario(scanner, controlStock, reporte);
-            case 3 -> SearchMenu.mostrarSubmenuBusqueda(scanner, controlStock);
-            case 4 -> ReportMenu.mostrarSubmenuReportes(scanner, controlStock, reporte);
-            case 5 -> SupplierMenu.mostrarSubmenuProveedor(scanner, supplierManagement);
+            case 1 -> inventoryManagement.mostrarInventario();
+            case 2 -> InventoryModificationMenu.showInventoryModificationSubmenu(scanner, inventoryManagement, reporte);
+            case 3 -> SearchMenu.showSearchSubmenu(scanner, inventoryManagement);
+            case 4 -> ReportMenu.showReportSubmenu(scanner, inventoryManagement, reporte);
+            case 5 -> SupplierMenu.showSupplierSubmenu(scanner, supplierManagement);
             case 6 -> {
-                controlStock.guardarInventario(inventarioRepository);
+                inventoryManagement.guardarInventario(inventarioRepository);
                 System.out.println("Sesión cerrada. ¡Hasta luego!");
                 return true;
             }
@@ -47,7 +42,7 @@ public class Menu { // Clase para mostrar el menú principal de opciones del sis
 
 class InventoryModificationMenu { // Clase para mostrar el menú de opciones relacionadas con el inventario y sus operaciones
 
-    public static void mostrarSubmenuInventario(Scanner scanner, InventoryManagement inventory_Management, InventoryReport reporte) { // Método para mostrar el menú de opciones del inventario 
+    public static void showInventoryModificationSubmenu (Scanner scanner, InventoryManagement inventory_Management, InventoryReport inventoryReport) { // Método para mostrar el menú de opciones del inventario 
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== MODIFICACIONES DE INVENTARIO ===");
@@ -64,11 +59,11 @@ class InventoryModificationMenu { // Clase para mostrar el menú de opciones rel
             int opcionModificacion = Integer.parseInt(scanner.nextLine());
             switch (opcionModificacion) {
                 case 1 -> InventoryManagementSystem.agregarCategoria(scanner, inventory_Management);
-                case 2 -> InventoryManagementSystem.agregarProductos(scanner, inventory_Management, reporte);
-                case 3 -> inventory_Management.modificarCantidad(scanner, reporte);
-                case 4 -> inventory_Management.modificarPrecio(scanner, reporte);
-                case 5 -> inventory_Management.eliminarProducto(scanner, reporte);
-                case 6 -> inventory_Management.eliminarCategoria(scanner, reporte);
+                case 2 -> InventoryManagementSystem.agregarProductos(scanner, inventory_Management, inventoryReport);
+                case 3 -> inventory_Management.modificarCantidad(scanner, inventoryReport);
+                case 4 -> inventory_Management.modificarPrecio(scanner, inventoryReport);
+                case 5 -> inventory_Management.eliminarProducto(scanner, inventoryReport);
+                case 6 -> inventory_Management.eliminarCategoria(scanner, inventoryReport);
                 case 7 -> {
                     System.out.print("Ingrese el nombre del archivo CSV para exportar (por ejemplo, 'Alpha/Archivo_Proyecto/inventario.csv'): ");
                     String nombreArchivo = scanner.nextLine();
@@ -95,7 +90,7 @@ class InventoryModificationMenu { // Clase para mostrar el menú de opciones rel
 
 class SearchMenu { // Clase para mostrar el menú de opciones relacionadas con la búsqueda de productos en el inventario
 
-    public static void mostrarSubmenuBusqueda(Scanner scanner, InventoryManagement inventory_Management) { // Método para mostrar el menú de opciones de búsqueda
+    public static void showSearchSubmenu(Scanner scanner, InventoryManagement inventory_Management) { // Método para mostrar el menú de opciones de búsqueda
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== BÚSQUEDA EN INVENTARIO ===");
@@ -128,7 +123,7 @@ class SearchMenu { // Clase para mostrar el menú de opciones relacionadas con l
 
 class ReportMenu { // Clase para mostrar el menú de opciones relacionadas con los reportes del inventario
 
-    public static void mostrarSubmenuReportes(Scanner scanner, InventoryManagement inventory_Management, InventoryReport reporte) { // Método para mostrar el menú de opciones de reportes 
+    public static void showReportSubmenu(Scanner scanner, InventoryManagement inventory_Management, InventoryReport inventoryReport) { // Método para mostrar el menú de opciones de reportes 
         boolean regresarAlMenu = false; 
         while (!regresarAlMenu) {
             System.out.println("\n=== REPORTES ===");
@@ -138,8 +133,8 @@ class ReportMenu { // Clase para mostrar el menú de opciones relacionadas con l
             System.out.print("Seleccione una opción: ");
             int opcionReporte = Integer.parseInt(scanner.nextLine());
             switch (opcionReporte) {
-                case 1 -> reporte.generarReporte(inventory_Management);
-                case 2 -> reporte.mostrarRegistroDeCambios(scanner);
+                case 1 -> inventoryReport.generarReporte(inventory_Management);
+                case 2 -> inventoryReport.mostrarRegistroDeCambios(scanner);
                 case 3 -> {
                     regresarAlMenu = true;
                     System.out.println("Regresando al menú principal...");
@@ -152,7 +147,7 @@ class ReportMenu { // Clase para mostrar el menú de opciones relacionadas con l
 
 class SupplierMenu { // Clase para mostrar el menú de opciones relacionadas con la gestión de proveedores
 
-    public static void mostrarSubmenuProveedor(Scanner scanner, SupplierManagement supplierManagement) { // Método para mostrar el menú de opciones de gestión de proveedores
+    public static void showSupplierSubmenu(Scanner scanner, SupplierManagement supplierManagement) { // Método para mostrar el menú de opciones de gestión de proveedores
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== GESTIÓN DE PROVEEDORES ===");

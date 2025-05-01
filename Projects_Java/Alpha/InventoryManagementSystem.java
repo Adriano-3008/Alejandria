@@ -62,14 +62,14 @@ class Producto implements Serializable {
     }
      // Método para mostrar el menú principal del sistema
     public static void mostrarMenu(boolean esAdmin) { 
-        Menu.mostrarMenuInventario(esAdmin);
+        Menu.showInventoryMenu(esAdmin);
     }
     //---------------------------------------------------------
     public static boolean procesarOpcion(Scanner scanner, InventoryManagement inventoryManagement, InventoryReport inventoryReport, File archivoInventario, UserManagement userManagement, boolean esAdmin, InventarioRepository inventarioRepository) {
         try {
             System.out.print("Seleccione una opción: ");
             int opcion = Integer.parseInt(scanner.nextLine());
-            return Menu.procesarOpcionInventario(opcion, scanner, inventoryManagement, inventoryReport, archivoInventario, userManagement, esAdmin, inventarioRepository);
+            return Menu.processInventoryOption(opcion, scanner, inventoryManagement, inventoryReport, archivoInventario, userManagement, esAdmin, inventarioRepository);
         } catch (NumberFormatException e) {
             System.out.println("Error: Por favor, ingrese un número válido.");
             return false;
