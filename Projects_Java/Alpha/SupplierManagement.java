@@ -31,6 +31,11 @@ class Supplier implements Serializable{ // Clase para representar un proveedor
     }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
 public class SupplierManagement{ // Clase para controlar los proveedores y sus operaciones (agregar, modificar, eliminar, listar, etc.)
     private final File archivoProveedores = new File("Alpha/Archivo_Proyecto/proveedores.dat"); // Ruta del archivo para almacenar los proveedores
     private List<Supplier> listSupplier = new ArrayList<>(); // Lista para almacenar los proveedores
@@ -139,6 +144,10 @@ public class SupplierManagement{ // Clase para controlar los proveedores y sus o
         }
     }
 }
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 class SupplierRepository{
 

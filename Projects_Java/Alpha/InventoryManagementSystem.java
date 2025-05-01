@@ -29,6 +29,10 @@ class Producto implements Serializable {
     public void setPrecio(double precio) { this.precio = precio; } 
  }
 
+ /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
  // Clase principal para ejecutar el sistema de gestión de inventarios
  public class InventoryManagementSystem { // Clase principal para ejecutar el sistema de gestión de inventarios
     public static void main(String[] args) { // Método principal para ejecutar el sistema
@@ -69,7 +73,7 @@ class Producto implements Serializable {
         try {
             System.out.print("Seleccione una opción: ");
             int opcion = Integer.parseInt(scanner.nextLine());
-            return Menu.processInventoryOption(opcion, scanner, inventoryManagement, inventoryReport, archivoInventario, userManagement, esAdmin, inventarioRepository);
+            return Menu.processInventoryOption(opcion, scanner, inventoryManagement, inventoryReport, archivoInventario, userManagement, esAdmin, inventarioRepository );
         } catch (NumberFormatException e) {
             System.out.println("Error: Por favor, ingrese un número válido.");
             return false;

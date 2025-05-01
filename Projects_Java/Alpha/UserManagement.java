@@ -1,22 +1,28 @@
 package Alpha;
-// Import necesario para trabajar con archivos y flujos de entrada/salida de datos (I/O)
-import java.io.*; 
-// Import necesario para trabajar con colecciones y Scanner
-import java.util.*; 
 
-public class UserManagement { // Clase para manejar el inicio de sesión de los usuarios y sus operaciones (iniciar sesión, registrar usuario, borrar usuario, etc.)
+import java.io.*; // Import necesario para trabajar con archivos y flujos de entrada/salida de datos (I/O)
 
-    private final File archivoUsuarios = new File("Alpha/Archivo_Proyecto/usuarios.dat"); // Ruta del archivo para almacenar los usuarios y contraseñas
+import java.util.*; // Import necesario para trabajar con colecciones y Scanner
+
+public class UserManagement { // Clase para manejar el registro y autenticación de usuarios en el sistema
+
+    private final UserRepository userRepository; // Repositorio para manejar la persistencia de usuarios
     private Map<String, String> usuarios = new HashMap<>(); // Mapa para almacenar los usuarios y sus contraseñas
     private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();  // Mapa para almacenar los usuarios y sus roles (administrador o normal)
 
-    public UserManagement() {// Constructor de la clase Login
-        cargarUsuarios(); // Cargar los usuarios y contraseñas desde el archivo
+    public UserManagement() { // Constructor de la clase UserManagement
+        this.userRepository = new UserRepository(); 
+        cargarUsuarios(); // Sincronizar los mapas al inicializar
     }
 
+    private void cargarUsuarios() { // Método para cargar los usuarios desde el repositorio
+        this.usuarios = userRepository.getUsuarios(); // Obtener los usuarios del repositorio
+        this.jerarquiaUsuarios = userRepository.getJerarquiaUsuarios(); // Obtener la jerarquía de usuarios del repositorio
+    }
     
     public String iniciarSesion(Scanner scanner) { // Método para iniciar sesión en el sistema
         while (true) {
+            userRepository.cargarUsuarios(); // Cargar los usuarios desde el archivo al iniciar sesión
             System.out.println("\n=== LOGIN ===");
             System.out.print("Ingrese su nombre de usuario: ");
             String usuario = scanner.nextLine();
@@ -67,63 +73,22 @@ public class UserManagement { // Clase para manejar el inicio de sesión de los 
 
         usuarios.put(usuario, contrasena);
         jerarquiaUsuarios.put(usuario, esAdmin);
-        guardarUsuarios(); 
+        userRepository.guardarUsuarios(); // Guardar los cambios en el archivo
         System.out.println("Usuario registrado exitosamente.");
     }
 
 
     public void borrarUsuario(Scanner scanner) { // Método para borrar un usuario existente del sistema
-        System.out.print("Ingrese su nombre de usuario administrador: ");
-        String usuarioAdmin = scanner.nextLine();
-        System.out.print("Ingrese su contraseña: ");
-        String contrasenaAdmin = scanner.nextLine();
-    
-        // Verificar si las credenciales son válidas
-        if (!usuarios.containsKey(usuarioAdmin) || !usuarios.get(usuarioAdmin).equals(contrasenaAdmin) || !esUsuarioAdmin(usuarioAdmin)) {
-            System.out.println("Credenciales de administrador incorrectas. No se puede borrar usuarios.");
-            return;
-        }
-    
         System.out.print("Ingrese el nombre del usuario que desea borrar: ");
         String usuarioABorrar = scanner.nextLine();
-    
+
         if (usuarios.containsKey(usuarioABorrar)) {
             usuarios.remove(usuarioABorrar);
-            guardarUsuarios();
+            jerarquiaUsuarios.remove(usuarioABorrar);
+            userRepository.guardarUsuarios(); // Guardar los cambios en el archivo
             System.out.println("Usuario '" + usuarioABorrar + "' borrado correctamente.");
         } else {
             System.out.println("El usuario especificado no existe.");
-        }
-    }
-
-    @SuppressWarnings("unchecked") //Para evitar advertencias de compilación de tipos en la conversión de objetos a Map<String, String>
-    public void cargarUsuarios() { // Método para cargar los usuarios y contraseñas desde el archivo de usuarios
-        if (!archivoUsuarios.exists()) {
-            try {
-                archivoUsuarios.getParentFile().mkdirs(); 
-                archivoUsuarios.createNewFile(); 
-                System.out.println("El archivo de usuarios no existía. Se ha creado un nuevo archivo en: " + archivoUsuarios.getAbsolutePath());
-            } catch (IOException e) {
-                System.out.println("Error al crear el archivo de usuarios: " + e.getMessage());
-            }
-            return;
-        }
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoUsuarios))) {
-            usuarios = (Map<String, String>) ois.readObject();
-            jerarquiaUsuarios = (Map<String, Boolean>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error al cargar los usuarios: " + e.getMessage());
-        }
-    }
-
-    
-    public void guardarUsuarios() { // Método para guardar los usuarios y contraseñas en el archivo
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoUsuarios))) {
-            oos.writeObject(usuarios);
-            oos.writeObject(jerarquiaUsuarios);
-        } catch (IOException e) {
-            System.out.println("Error al guardar los usuarios: " + e.getMessage());
         }
     }
 
@@ -149,6 +114,7 @@ public class UserManagement { // Clase para manejar el inicio de sesión de los 
                     break;
                 case "4":
                     System.out.println("Saliendo del programa... ¡Hasta luego!");
+                    userRepository.guardarUsuarios();
                     System.exit(0); 
                 default:
                     System.out.println("Opción no válida. Intente nuevamente.");
@@ -200,5 +166,57 @@ public class UserManagement { // Clase para manejar el inicio de sesión de los 
 
     public boolean esUsuarioAdmin(String usuario) { // Método para verificar si un usuario es administrador
         return jerarquiaUsuarios.getOrDefault(usuario, false);
+    }
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+class UserRepository {
+    private final File archivoUsuarios = new File("Alpha/Archivo_Proyecto/usuarios.dat");
+    private Map<String, String> usuarios = new HashMap<>();
+    private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();
+
+    public UserRepository() {
+        cargarUsuarios();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void cargarUsuarios() {
+        if (!archivoUsuarios.exists()) {
+            try {
+                archivoUsuarios.getParentFile().mkdirs();
+                archivoUsuarios.createNewFile();
+                System.out.println("El archivo de usuarios no existía. Se ha creado un nuevo archivo.");
+            } catch (IOException e) {
+                System.out.println("Error al crear el archivo de usuarios: " + e.getMessage());
+            }
+            return;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoUsuarios))) {
+            usuarios = (Map<String, String>) ois.readObject();
+            jerarquiaUsuarios = (Map<String, Boolean>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al cargar los usuarios: " + e.getMessage());
+        }
+    }
+
+    public void guardarUsuarios() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoUsuarios))) {
+            oos.writeObject(usuarios);
+            oos.writeObject(jerarquiaUsuarios);
+        } catch (IOException e) {
+            System.out.println("Error al guardar los usuarios: " + e.getMessage());
+        }
+    }
+
+    public Map<String, String> getUsuarios() {
+        return usuarios;
+    }
+
+    public Map<String, Boolean> getJerarquiaUsuarios() {
+        return jerarquiaUsuarios;
     }
 }
