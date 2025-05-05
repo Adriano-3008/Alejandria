@@ -1,5 +1,5 @@
 -/-/-/ PLAZOS DE DESARROLLO PARA EL PROYECTO DE GESTION DE INVENTARIOS \-\-\-
-
-1. 07/05/2025: Estructuracion completa y definitiva de diagrama UML del proyecto
-2. 09/05/2025: Aplicacion completa y definitiva del Principio de responsabilidad Unica ::SRP::
-3. 
+1. Investigar e implementar Patron de diseño MVC (Model-View-Controller) 10/05/2025
+2. 07/05/2025: Estructuracion completa y definitiva de diagrama UML del proyecto. 12/05/2025
+3. Aplicacion completa y definitiva del Principio de responsabilidad Unica ::SRP:: 14/05/2025
+4. 
