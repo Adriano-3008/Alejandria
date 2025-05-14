@@ -3,7 +3,7 @@ package Alpha;
 // Import necesario para trabajar con colecciones y Scanner
 import java.util.*; 
 
-public class Validaciones{ // Clase para validar las entradas del usuario en el sistema
+public class Validation{ // Clase para validar las entradas del usuario en el sistema
         
     public static int leerEnteroPositivo(Scanner scanner, String mensajeError) { // Método para validar un número entero positivo
         while (true) {

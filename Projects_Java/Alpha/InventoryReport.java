@@ -4,7 +4,7 @@ import java.io.*;
 // Import necesario para trabajar con colecciones y Scanner
 import java.util.*; 
 
-public class ReporteDeInventario { // Clase para generar reportes detallados del inventario y mostrar el historial de cambios
+public class InventoryReport { // Clase para generar reportes detallados del inventario y mostrar el historial de cambios
    
     private final File archivoHistorial = new File("Alpha/Archivo_Proyecto/historial_cambios.dat"); // Ruta del archivo para almacenar el historial de cambios
     private List<String> registroDeCambios = new ArrayList<>(); // Lista para almacenar los registros de cambios en el inventario

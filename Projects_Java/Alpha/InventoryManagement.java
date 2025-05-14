@@ -14,10 +14,9 @@ public class InventoryManagement {
 
     public void agregarProducto(Producto producto) {
         productosPorCategoria.computeIfAbsent(producto.getCategoria(), k -> new ArrayList<>()).add(producto);
-    
         // Registrar el ingreso
         String detalle = "Ingreso inicial: " + producto.getCantidad() + " unidades.";
-        ReporteDeInventario reporte = new ReporteDeInventario();
+        InventoryReport reporte = new InventoryReport();
         reporte.registrarCambio("Agregar Producto", producto.getCategoria(), producto.getNombre(), detalle);
     
         // Verificar stock bajo solo si es necesario
@@ -28,14 +27,15 @@ public class InventoryManagement {
 
     // Método para verificar si una categoría ya existe en el inventario
     public boolean existeCategoria(String categoria) { 
-        return productosPorCategoria.containsKey(categoria);
+        return productosPorCategoria.containsKey(categoria); 
     }
 
     // Método para agregar una nueva categoría al inventario
     public void agregarCategoria(String categoria) { 
-        if (existeCategoria(categoria)) {
-            System.out.println("La categoría '" + categoria + "' ya existe.");
-        } else {
+        if (existeCategoria(categoria)) { 
+            System.out.println("La categoría '" + categoria + "' ya existe."); 
+        } 
+        else {
             productosPorCategoria.put(categoria, new ArrayList<>());
             System.out.println("Categoría '" + categoria + "' creada correctamente.");
         }
@@ -49,7 +49,6 @@ public class InventoryManagement {
         }
     
         System.out.println("\n=== Inventario Actual ===");
-    
         for (var entry : productosPorCategoria.entrySet()) {
             String categoria = entry.getKey();
             List<Producto> productos = entry.getValue();
@@ -74,7 +73,6 @@ public class InventoryManagement {
                 String valorTotalFormateado = String.format("$%,.2f", p.getCantidad() * p.getPrecio());
                 System.out.printf(formatoFila, p.getNombre(), p.getCantidad(), precioFormateado, valorTotalFormateado);
             }
-    
             System.out.println(separador);
         }
     }
@@ -89,16 +87,16 @@ public class InventoryManagement {
     }
 
      // Método para modificar la cantidad de un producto en el inventario por su nombre y categoría
-    public void modificarCantidad(Scanner scanner, ReporteDeInventario reporte) {
+    public void modificarCantidad(Scanner scanner, InventoryReport reporte) {
         System.out.print("\nIngrese la categoría del producto: ");
-        String categoria = Validaciones.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
+        String categoria = Validation.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
         System.out.print("Ingrese el nombre del producto: ");
-        String nombreProducto = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
+        String nombreProducto = Validation.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
     
         Producto producto = buscarProducto(categoria, nombreProducto);
         if (producto != null) {
             System.out.print("Ingrese la nueva cantidad: ");
-            int nuevaCantidad = Validaciones.leerEnteroPositivo(scanner, "Ingrese un número válido para la cantidad.");
+            int nuevaCantidad = Validation.leerEnteroPositivo(scanner, "Ingrese un número válido para la cantidad.");
             int cantidadAnterior = producto.getCantidad();
             producto.setCantidad(nuevaCantidad);
     
@@ -115,16 +113,16 @@ public class InventoryManagement {
     }
 
      // Método para modificar el precio de un producto en el inventario por su nombre y categoría
-    public void modificarPrecio(Scanner scanner, ReporteDeInventario reporte) {
+    public void modificarPrecio(Scanner scanner, InventoryReport reporte) {
         System.out.print("\nIngrese la categoría del producto: ");
-        String categoria = Validaciones.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
+        String categoria = Validation.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
         System.out.print("Ingrese el nombre del producto: ");
-        String nombreProducto = Validaciones.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
+        String nombreProducto = Validation.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
 
         Producto producto = buscarProducto(categoria, nombreProducto);
         if (producto != null) {
             System.out.print("Ingrese el nuevo precio: ");
-            double nuevoPrecio = Validaciones.leerDoublePositivo(scanner, "Ingrese un número válido para el precio.");
+            double nuevoPrecio = Validation.leerDoublePositivo(scanner, "Ingrese un número válido para el precio.");
             double precioAnterior = producto.getPrecio();
             producto.setPrecio(nuevoPrecio);
             System.out.println("Precio actualizado correctamente.");
@@ -137,7 +135,7 @@ public class InventoryManagement {
     }
 
     // Método para eliminar un producto del inventario por su nombre y categoría
-    public void eliminarProducto(Scanner scanner, ReporteDeInventario reporte) { 
+    public void eliminarProducto(Scanner scanner, InventoryReport reporte) { 
         System.out.print("\nIngrese la categoría del producto: ");
         String categoria = scanner.nextLine();
         System.out.print("Ingrese el nombre del producto: ");
@@ -155,7 +153,7 @@ public class InventoryManagement {
     }
 
      // Método para eliminar una categoría y sus productos del inventario
-    public void eliminarCategoria(Scanner scanner, ReporteDeInventario reporte) { 
+    public void eliminarCategoria(Scanner scanner, InventoryReport reporte) { 
         System.out.print("\nIngrese el nombre de la categoría que desea eliminar: ");
         String categoria = scanner.nextLine();
 
@@ -221,25 +219,37 @@ public class InventoryManagement {
     }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+class InventorySearch{
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 class InventarioRepository {
-    private final File archivo;
+    private final File archivoInventario;
 
     public InventarioRepository(File archivo) {
-        this.archivo = archivo;
+        this.archivoInventario = new File("Projects_Java/Archivo_Proyecto_Alpha/.dats/Archivo_Inventario.dat");
     }
 
     @SuppressWarnings("unchecked")
     public Map<String, List<Producto>> cargarInventario() {
         Map<String, List<Producto>> productosPorCategoria = new HashMap<>();
         try {
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                archivo.createNewFile();
-                System.out.println("El archivo de inventario no existía. Se ha creado un nuevo archivo en: " + archivo.getAbsolutePath());
+            if (!archivoInventario.exists()) {
+                archivoInventario.getParentFile().mkdirs();
+                archivoInventario.createNewFile();
+                System.out.println("El archivo de inventario no existía. Se ha creado un nuevo archivo en: " + archivoInventario.getAbsolutePath());
                 return productosPorCategoria;
             }
 
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivo))) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoInventario))) {
                 Object obj = ois.readObject();
                 if (obj instanceof Map<?, ?>) {
                     productosPorCategoria = (Map<String, List<Producto>>) obj;
@@ -255,12 +265,12 @@ class InventarioRepository {
 
     public void guardarInventario(Map<String, List<Producto>> productosPorCategoria) {
         try {
-            if (!archivo.exists()) {
-                archivo.getParentFile().mkdirs();
-                archivo.createNewFile();
+            if (!archivoInventario.exists()) {
+                archivoInventario.getParentFile().mkdirs();
+                archivoInventario.createNewFile();
             }
 
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivo))) {
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoInventario))) {
                 oos.writeObject(productosPorCategoria);
             }
         } catch (IOException e) {
@@ -268,6 +278,10 @@ class InventarioRepository {
         }
     }
 }
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 class ArchivoCSV {
 
@@ -337,6 +351,10 @@ class ArchivoCSV {
         }
     }
 }
+
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 // Clase para verificar y mostrar alertas de productos con stock bajo
 class alertaStock { 

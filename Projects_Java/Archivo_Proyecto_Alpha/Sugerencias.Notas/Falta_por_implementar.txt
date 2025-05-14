@@ -1,0 +1,42 @@
+1. Análisis y Aplicación del Principio de Responsabilidad Única (SRP)
+
+1.1. SistemaDeGestionDeInventarios
+Problema: Esta clase mezcla responsabilidades de orquestación principal, manejo de login, presentación de menús, y delegación de tareas específicas.
+Solución:
+    Crear una clase InterfazUsuarioConsola para manejar la interacción con el usuario (mostrar menús, leer entradas).
+    Delegar las acciones específicas como agregarCategoria y agregarProductos a clases controladoras (GestionInventario, GestionUsuarios, etc.).
+    Reducir esta clase a un orquestador principal que coordine las operaciones.
+
+1.2. Login
+Problema: Mezcla autenticación, gestión de usuarios, persistencia y lógica de interfaz de usuario.
+Solución:
+    Crear una clase Autenticador para manejar la autenticación.
+    Crear una clase GestionUsuarios para manejar el CRUD de usuarios.
+    Crear una clase UsuarioRepository para manejar la persistencia de usuarios.
+    Mover la interacción con el usuario a InterfazUsuarioConsola.
+
+1.3. InventoryManagement
+Problema: Mezcla gestión del estado del inventario, lógica de negocio, persistencia, generación de reportes y validaciones.
+Solución:
+    Renombrar a GestionInventario y enfocarla en la lógica de negocio.
+    Crear una clase InventarioRepository para manejar la persistencia.
+    Crear una clase InventorySearch para manejar las búsquedas (buscarPorNombre, buscarPorCategoria).
+    Mover la generación de reportes a ReporteDeInventario.
+
+1.4. ReporteDeInventario
+Problema: Mezcla la generación de reportes y la interacción con el usuario.
+Solución:
+    Mantener la generación de reportes en esta clase.
+    Mover la interacción con el usuario (como mostrarRegistroDeCambios) a InterfazUsuarioConsola.
+
+1.5. ControlProveedor
+Problema: Mezcla la gestión de proveedores, persistencia e interacción con el usuario.
+Solución:
+    Renombrar a GestionProveedores y enfocarla en la lógica de negocio.
+    Crear una clase ProveedorRepository para manejar la persistencia.
+    Mover la interacción con el usuario a InterfazUsuarioConsola.
+
+1.6. Validaciones
+Problema: Está acoplada a la entrada por consola (Scanner).
+Solución:
+    Mover las validaciones a InterfazUsuarioConsola o desacoplarlas para que sean reutilizables en otros contextos.
