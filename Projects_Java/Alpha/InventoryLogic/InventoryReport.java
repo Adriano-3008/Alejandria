@@ -1,4 +1,4 @@
-package Alpha;
+package Alpha.InventoryLogic;
 // Import necesario para trabajar con archivos y flujos de entrada/salida de datos (I/O)
 import java.io.*; 
 // Import necesario para trabajar con colecciones y Scanner
@@ -6,7 +6,7 @@ import java.util.*;
 
 public class InventoryReport { // Clase para generar reportes detallados del inventario y mostrar el historial de cambios
    
-    private final File archivoHistorial = new File("Alpha/Archivo_Proyecto/historial_cambios.dat"); // Ruta del archivo para almacenar el historial de cambios
+    private final File ficheroHistorial = new File("Alpha/Archivo_Proyecto/historial_cambios.dat"); // Ruta del archivo para almacenar el historial de cambios
     private List<String> registroDeCambios = new ArrayList<>(); // Lista para almacenar los registros de cambios en el inventario
 
     public void registrarCambio(String accion, String categoria, String producto, String detalle) { // Método para registrar un cambio en el inventario
@@ -52,15 +52,15 @@ public class InventoryReport { // Clase para generar reportes detallados del inv
     
     public void borrarHistorial() { // Método para borrar el historial de cambios
         registroDeCambios.clear();
-        if (archivoHistorial.exists()) {
-            archivoHistorial.delete(); 
+        if (ficheroHistorial.exists()) {
+            ficheroHistorial.delete(); 
         }
         System.out.println("El historial de cambios ha sido borrado.");
     }
 
     
     public void guardarHistorial() { // Método para guardar el historial de cambios en un archivo
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoHistorial))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ficheroHistorial))) {
             oos.writeObject(registroDeCambios);
         } catch (IOException e) {
             System.out.println("Error al guardar el historial de cambios: " + e.getMessage());
@@ -69,26 +69,26 @@ public class InventoryReport { // Clase para generar reportes detallados del inv
 
     @SuppressWarnings("unchecked") //Para evitar advertencias de compilación de tipos en la conversión de objetos a List<String>
     public void cargarHistorial() { // Método para cargar el historial de cambios desde un archivo
-        if (!archivoHistorial.exists()) {
+        if (!ficheroHistorial.exists()) {
             try {
-                archivoHistorial.getParentFile().mkdirs(); 
-                archivoHistorial.createNewFile(); 
-                System.out.println("El archivo de historial de cambios no existía. Se ha creado un nuevo archivo en: " + archivoHistorial.getAbsolutePath());
+                ficheroHistorial.getParentFile().mkdirs(); 
+                ficheroHistorial.createNewFile(); 
+                System.out.println("El archivo de historial de cambios no existía. Se ha creado un nuevo archivo en: " + ficheroHistorial.getAbsolutePath());
             } catch (IOException e) {
                 System.out.println("Error al crear el archivo de historial de cambios: " + e.getMessage());
             }
             return;
         }
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoHistorial))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ficheroHistorial))) {
             registroDeCambios = (List<String>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error al cargar el historial de cambios: " + e.getMessage());
         }
     }
 
-    public void generarReporte(InventoryManagement controlStock) { // Método para generar un reporte detallado del inventario
-        Map<String, List<Producto>> productosPorCategoria = controlStock.getProductosPorCategoria(); // Obtener los productos por categoría del inventario actual
+    public void generarReporte(Inventory inventario) { // Método para generar un reporte detallado del inventario
+        Map<String, List<Producto>> productosPorCategoria = inventario.getProductosPorCategoria(); // Obtener los productos por categoría del inventario actual
     
         if (productosPorCategoria.isEmpty()) {
             System.out.println("El inventario está vacío. No hay datos para generar el reporte.");

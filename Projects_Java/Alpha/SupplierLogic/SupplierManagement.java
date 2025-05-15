@@ -1,40 +1,7 @@
-package Alpha;
-// Import necesario para trabajar con archivos y flujos de entrada/salida de datos (I/O)
-import java.io.*; 
-// Import necesario para trabajar con colecciones y Scanner
+package Alpha.SupplierLogic;
 import java.util.*;
-
-class Supplier implements Serializable{ // Clase para representar un proveedor
-    private static final long serialVersionUID = 1L;
-    private String nombre;
-    private String contacto;
-    private String productosSuministrados;
-
-    public Supplier(String nombre, String contacto, String productosSuministrados) { // Constructor de la clase Proveedor
-        this.nombre = nombre;
-        this.contacto = contacto;
-        this.productosSuministrados = productosSuministrados;
-    }
-
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-
-    public String getContacto() { return contacto; }
-    public void setContacto(String contacto) { this.contacto = contacto; }
-
-    public String getProductosSuministrados() { return productosSuministrados; }
-    public void setProductosSuministrados(String productosSuministrados) { this.productosSuministrados = productosSuministrados; }
-
-    @Override
-    public String toString() {
-        return String.format("Proveedor: %s | Contacto: %s | Productos: %s", nombre, contacto, productosSuministrados);
-    }
-}
-
-/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
+import Alpha.Validation;
+import Alpha.Repositories.SupplierRepository;
 
 public class SupplierManagement{ // Clase para controlar los proveedores y sus operaciones (agregar, modificar, eliminar, listar, etc.)
     private List<Supplier> listSupplier = new ArrayList<>(); // Lista para almacenar los proveedores
@@ -127,50 +94,4 @@ public class SupplierManagement{ // Clase para controlar los proveedores y sus o
                 .orElse(null);
     }
    
-}
-
-/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-class SupplierRepository {
-    private final File archivoProveedores = new File("Projects_Java/Archivo_Proyecto_Alpha/.dats/Archivo_Proveedores.dat");
-    private List<Supplier> listSupplier = new ArrayList<>();
-
-    public SupplierRepository() {
-        cargarProveedores();
-    }
-  
-    
-    @SuppressWarnings("unchecked")
-    public void cargarProveedores() {
-        if (!archivoProveedores.exists()) {
-            try {
-                archivoProveedores.getParentFile().mkdirs();
-                archivoProveedores.createNewFile();
-                System.out.println("El archivo de proveedores no existía. Se ha creado un nuevo archivo.");
-            } catch (IOException e) {
-                System.out.println("Error al crear el archivo de proveedores: " + e.getMessage());
-            }
-            return;
-        }
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoProveedores))) {
-            listSupplier = (List<Supplier>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error al cargar los proveedores: " + e.getMessage());
-        }
-    }
-
-    public void guardarProveedores() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoProveedores))) {
-            oos.writeObject(listSupplier);
-        } catch (IOException e) {
-            System.out.println("Error al guardar los proveedores: " + e.getMessage());
-        }
-    }
-
-    public List<Supplier> getListSupplier() {
-        return listSupplier;
-    }
 }
