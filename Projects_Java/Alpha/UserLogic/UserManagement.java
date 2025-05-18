@@ -5,20 +5,20 @@ import Alpha.Repositories.UserRepository;
 
 public class UserManagement { // Clase para manejar el registro y autenticación de usuarios en el sistema
 
-    private final UserRepository userRepository; // Repositorio para manejar la persistencia de usuarios
-    private Map<String, String> usuarios = new HashMap<>(); // Mapa para almacenar los usuarios y sus contraseñas
-    private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();  // Mapa para almacenar los usuarios y sus roles (administrador o normal)
-    private final UserAuthentication userAuthentication; // Instancia de la clase UserAuthentication para manejar el inicio de sesión
+    private final UserRepository repositorioUsuario; 
+    private Map<String, String> usuarios = new HashMap<>(); 
+    private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();  
+    private final UserAuthentication userAuthentication; 
 
     public UserManagement() { // Constructor de la clase UserManagement
-        this.userRepository = new UserRepository(); 
-        this.userAuthentication = new UserAuthentication(this); // Inicializa la autenticación de usuarios
+        this.repositorioUsuario = new UserRepository(); 
+        this.userAuthentication = new UserAuthentication(this); 
         cargarUsuarios(); // Sincronizar los mapas al inicializar
     }
 
     private void cargarUsuarios() { // Método para cargar los usuarios desde el repositorio
-        this.usuarios = userRepository.getUsuarios(); // Obtener los usuarios del repositorio
-        this.jerarquiaUsuarios = userRepository.getJerarquiaUsuarios(); // Obtener la jerarquía de usuarios del repositorio
+        this.usuarios = repositorioUsuario.getUsuarios(); 
+        this.jerarquiaUsuarios = repositorioUsuario.getJerarquiaUsuarios(); 
     }
     
     public Map<String, String> getUsuarios() { // Método para obtener el mapa de usuarios
@@ -55,7 +55,7 @@ public class UserManagement { // Clase para manejar el registro y autenticación
 
         usuarios.put(usuario, contrasena);
         jerarquiaUsuarios.put(usuario, esAdmin);
-        userRepository.guardarUsuarios(); // Guardar los cambios en el archivo
+        repositorioUsuario.guardarUsuarios(); // Guardar los cambios en el archivo
         System.out.println("Usuario registrado exitosamente.");
     }
 
@@ -67,7 +67,7 @@ public class UserManagement { // Clase para manejar el registro y autenticación
         if (usuarios.containsKey(usuarioABorrar)) {
             usuarios.remove(usuarioABorrar);
             jerarquiaUsuarios.remove(usuarioABorrar);
-            userRepository.guardarUsuarios(); // Guardar los cambios en el archivo
+            repositorioUsuario.guardarUsuarios(); // Guardar los cambios en el archivo
             System.out.println("Usuario '" + usuarioABorrar + "' borrado correctamente.");
         } else {
             System.out.println("El usuario especificado no existe.");
@@ -92,11 +92,11 @@ public class UserManagement { // Clase para manejar el registro y autenticación
                     registrarUsuario(scanner);
                     break;
                 case "3":
-                    manejarUsuariosRegistrados(scanner); // Nueva opción para manejar usuarios registrados
+                    manejarUsuariosRegistrados(scanner); 
                     break;
                 case "4":
                     System.out.println("Saliendo del programa... ¡Hasta luego!");
-                    userRepository.guardarUsuarios();
+                    repositorioUsuario.guardarUsuarios();
                     System.exit(0); 
                 default:
                     System.out.println("Opción no válida. Intente nuevamente.");
@@ -104,7 +104,7 @@ public class UserManagement { // Clase para manejar el registro y autenticación
         }
     }
 
-    public void manejarUsuariosRegistrados(Scanner scanner) { // Método para manejar las opciones relacionadas con usuarios registrados
+    public void manejarUsuariosRegistrados(Scanner scanner) { // Método para manejar la visualización y eliminación de usuarios registrados
         System.out.println("\n=== USUARIOS REGISTRADOS ===");
         if (usuarios.isEmpty()) {
             System.out.println("No hay usuarios registrados.");

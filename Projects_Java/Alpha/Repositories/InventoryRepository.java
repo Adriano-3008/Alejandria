@@ -9,7 +9,7 @@ public class InventoryRepository {
     private final File ficheroInventario;
 
     public InventoryRepository(File ficheroInventario) {
-        this.ficheroInventario = new File("Projects_Java/Archivo_Proyecto_Alpha/.dats/Archivo_Inventario.dat");
+        this.ficheroInventario = new File("Projects_Java/Archivo_Proyecto/.dats/Archivo_Inventario.dat");
     }
 
     @SuppressWarnings("unchecked")

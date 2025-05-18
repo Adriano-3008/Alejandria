@@ -12,8 +12,8 @@ import Alpha.UserLogic.UserManagement;
 
 public class MainMenu { // Clase para mostrar el menú principal de opciones del sistema
 
-    public static void showInventoryMenu (boolean esAdmin) { // Método para mostrar el menú principal de opciones
-        System.out.println("\n=== MENÚ DE INVENTARIO ===");
+    public static void mostrarMenuPrincipal (boolean esAdmin) { // Método para mostrar el menú principal de opciones
+        System.out.println("\n=== MENÚ PRINCIPAL ===");
         System.out.println("1. Mostrar Inventario");
         System.out.println("2. Modificaciones de Inventario");
         System.out.println("3. Búsqueda en Inventario");
@@ -22,15 +22,19 @@ public class MainMenu { // Clase para mostrar el menú principal de opciones del
         System.out.println("6. Cerrar sesión");
     }
 
-    public static boolean processInventoryOption(int opcion, Scanner scanner, Inventory inventario, InventoryReport reporte, File archivo, UserManagement userManagement, boolean esAdmin, InventoryRepository repositorioInventario) 
+    public static boolean procesarOpcion(int opcion, Scanner scanner, Inventory inventario, InventoryReport reporteInventario, File archivo, UserManagement manejoUsuario, boolean esAdmin, InventoryRepository repositorioInventario) 
     {
         SupplierManagement supplierManagement = new SupplierManagement();
         switch (opcion) {
             case 1 -> inventario.mostrarInventario();
-            case 2 -> InventoryModificationMenu.showInventoryModificationSubmenu(scanner, inventario, reporte);
-            case 3 -> SearchMenu.showSearchSubmenu(scanner, inventario);
-            case 4 -> ReportMenu.showReportSubmenu(scanner, inventario, reporte);
-            case 5 -> SupplierMenu.showSupplierSubmenu(scanner, supplierManagement);
+            case 2 -> InventoryModificationMenu.mostrarMenuModificacionInventario(scanner, inventario, reporteInventario);
+            case 3 -> SearchMenu.mostrarMenuBusqueda(scanner, inventario);
+            case 4 -> ReportMenu.mostrarMenuReportes(scanner, inventario, reporteInventario);
+            case 5 -> {
+                // Cargar proveedores antes de mostrar el menú
+                supplierManagement.getRepositorioProveedor().cargarProveedores();
+                SupplierMenu.mostrarMenuProovedores(scanner, supplierManagement);
+            }
             case 6 -> {
                 inventario.guardarInventario(repositorioInventario);
                 System.out.println("Sesión cerrada. ¡Hasta luego!");

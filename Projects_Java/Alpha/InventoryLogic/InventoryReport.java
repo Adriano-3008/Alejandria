@@ -6,7 +6,7 @@ import java.util.*;
 
 public class InventoryReport { // Clase para generar reportes detallados del inventario y mostrar el historial de cambios
    
-    private final File ficheroHistorial = new File("Alpha/Archivo_Proyecto/historial_cambios.dat"); // Ruta del archivo para almacenar el historial de cambios
+    private final File ficheroHistorial = new File("Projects_Java/Archivo_Proyecto/.dats/historial_cambios.dat"); // Ruta del archivo para almacenar el historial de cambios
     private List<String> registroDeCambios = new ArrayList<>(); // Lista para almacenar los registros de cambios en el inventario
 
     public void registrarCambio(String accion, String categoria, String producto, String detalle) { // Método para registrar un cambio en el inventario

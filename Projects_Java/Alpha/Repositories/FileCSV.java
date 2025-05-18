@@ -30,6 +30,16 @@ public class FileCSV {
     }
 
     public void importar(File ficherocsv, Map<String, List<Producto>> productosPorCategoria, Inventory inventario) {
+        // Validar que la ruta no sea nula o vacía
+        if (ficherocsv == null || ficherocsv.getPath().trim().isEmpty()) {
+            System.out.println("La ruta del archivo CSV no es válida.");
+            return;
+        }
+
+        // Eliminar espacios en blanco adicionales
+        ficherocsv = new File(ficherocsv.getPath().trim());
+
+        // Verificar si el archivo existe
         if (!ficherocsv.exists()) {
             System.out.println("El archivo CSV especificado no existe en: " + ficherocsv.getAbsolutePath());
             return;

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserRepository {
-    private final File archivoUsuarios = new File("Projects_Java/Archivo_Proyecto_Alpha/.dats/Archivo_Usuarios.dat"); // Ruta del archivo para almacenar los usuarios
+    private final File archivoUsuarios = new File("Projects_Java/Archivo_Proyecto/.dats/Archivo_Usuarios.dat"); // Ruta del archivo para almacenar los usuarios
     private Map<String, String> usuarios = new HashMap<>();
     private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();
 

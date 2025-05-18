@@ -16,22 +16,22 @@ import Alpha.UserLogic.UserManagement;
  public class InventoryManagementSystem { 
     public static void main(String[] args) { 
         Scanner scanner = new Scanner(System.in);
-        UserManagement userManagement = new UserManagement();
+        UserManagement manejoUsuario = new UserManagement();
         Inventory inventario = new Inventory();
         File ficheroInventario = new File("Alpha/Archivo_Proyecto/inventario.dat");
         InventoryRepository repositorioInventario = new InventoryRepository(ficheroInventario);
-        InventoryReport inventoryReport = new InventoryReport();
+        InventoryReport reporteInventario = new InventoryReport();
         // --------------------------
         boolean salirSistema = false;
         while (!salirSistema) {
-            String usuarioLogueado = manejarLogin(scanner, userManagement);
+            String usuarioLogueado = manejarLogin(scanner, manejoUsuario);
             inventario.cargarInventario(repositorioInventario);
 
             boolean cerrarSesion = false;
-            boolean esAdmin = userManagement.esUsuarioAdmin(usuarioLogueado);
+            boolean esAdmin = manejoUsuario.esUsuarioAdmin(usuarioLogueado);
             while (!cerrarSesion) {
                 mostrarMenu(esAdmin);
-                cerrarSesion = procesarOpcion(scanner, inventario, inventoryReport, ficheroInventario, userManagement, esAdmin, repositorioInventario);
+                cerrarSesion = procesarOpcion(scanner, inventario, reporteInventario, ficheroInventario, manejoUsuario, esAdmin, repositorioInventario);
             }
 
             inventario.guardarInventario(repositorioInventario);
@@ -40,19 +40,19 @@ import Alpha.UserLogic.UserManagement;
         scanner.close();
     }
     // Método para manejar el inicio de sesión del usuario
-    public static String manejarLogin(Scanner scanner, UserManagement userManagement) { 
-        return userManagement.manejarLogin(scanner);
+    public static String manejarLogin(Scanner scanner, UserManagement manejoUsuario) { 
+        return manejoUsuario.manejarLogin(scanner);
     }
      // Método para mostrar el menú principal del sistema
     public static void mostrarMenu(boolean esAdmin) { 
-        MainMenu.showInventoryMenu(esAdmin);
+        MainMenu.mostrarMenuPrincipal(esAdmin);
     }
     //---------------------------------------------------------
-    public static boolean procesarOpcion(Scanner scanner, Inventory inventario, InventoryReport inventoryReport, File archivoInventario, UserManagement userManagement, boolean esAdmin, InventoryRepository repositorioInventario) {
+    public static boolean procesarOpcion(Scanner scanner, Inventory inventario, InventoryReport reporteInventario, File ficheroInventario, UserManagement manejoUsuario, boolean esAdmin, InventoryRepository repositorioInventario) {
         try {
             System.out.print("Seleccione una opción: ");
             int opcion = Integer.parseInt(scanner.nextLine());
-            return MainMenu.processInventoryOption(opcion, scanner, inventario, inventoryReport, archivoInventario, userManagement, esAdmin, repositorioInventario);
+            return MainMenu.procesarOpcion(opcion, scanner, inventario, reporteInventario, ficheroInventario, manejoUsuario, esAdmin, repositorioInventario);
         } catch (NumberFormatException e) {
             System.out.println("Error: Por favor, ingrese un número válido.");
             return false;
@@ -65,7 +65,7 @@ import Alpha.UserLogic.UserManagement;
         inventario.agregarCategoria(categoria);
     }
     // Método para agregar productos a una categoría del inventario
-    public static void agregarProductos(Scanner scanner, Inventory inventario, InventoryReport inventoryReport) {
+    public static void agregarProductos(Scanner scanner, Inventory inventario, InventoryReport reporteInventario) {
         System.out.print("Ingrese la categoría del producto: ");
         String categoria = Validation.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
     
@@ -87,7 +87,7 @@ import Alpha.UserLogic.UserManagement;
             inventario.agregarProducto(nuevoProducto);
             System.out.println("Producto agregado correctamente.");
     
-            inventoryReport.registrarCambio("Agregar Producto", categoria, nombre,
+            reporteInventario.registrarCambio("Agregar Producto", categoria, nombre,
                     "Cantidad: " + cantidad + ", Precio: $" + precio);
     
             System.out.print("¿Desea agregar otro producto a esta categoría? (s/n): ");

@@ -16,8 +16,8 @@ public class Inventory {
         productosPorCategoria.computeIfAbsent(producto.getCategoria(), k -> new ArrayList<>()).add(producto);
         // Registrar el ingreso
         String detalle = "Ingreso inicial: " + producto.getCantidad() + " unidades.";
-        InventoryReport reporte = new InventoryReport();
-        reporte.registrarCambio("Agregar Producto", producto.getCategoria(), producto.getNombre(), detalle);
+        InventoryReport reporteInventario = new InventoryReport();
+        reporteInventario.registrarCambio("Agregar Producto", producto.getCategoria(), producto.getNombre(), detalle);
     
         // Verificar stock bajo solo si es necesario
         if (producto.getCantidad() < StockAlert.LIMITE_STOCK_BAJO) {
@@ -87,7 +87,7 @@ public class Inventory {
     }
 
      // Método para modificar la cantidad de un producto en el inventario por su nombre y categoría
-    public void modificarCantidad(Scanner scanner, InventoryReport reporte) {
+    public void modificarCantidad(Scanner scanner, InventoryReport reporteInventario) {
         System.out.print("\nIngrese la categoría del producto: ");
         String categoria = Validation.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
         System.out.print("Ingrese el nombre del producto: ");
@@ -104,7 +104,7 @@ public class Inventory {
                     ? "Nueva cantidad mayor: Ingreso de " + (nuevaCantidad - cantidadAnterior) + " unidades."
                     : "Nueva cantidad menor: Retiro de " + (cantidadAnterior - nuevaCantidad) + " unidades.";
     
-            reporte.registrarCambio("Modificar Cantidad", categoria, nombreProducto, detalle);
+            reporteInventario.registrarCambio("Modificar Cantidad", categoria, nombreProducto, detalle);
             System.out.println("Cantidad actualizada correctamente.");
             alerta.verificarStockBajo(productosPorCategoria);
         } else {
@@ -113,7 +113,7 @@ public class Inventory {
     }
 
      // Método para modificar el precio de un producto en el inventario por su nombre y categoría
-    public void modificarPrecio(Scanner scanner, InventoryReport reporte) {
+    public void modificarPrecio(Scanner scanner, InventoryReport reporteInventario) {
         System.out.print("\nIngrese la categoría del producto: ");
         String categoria = Validation.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
         System.out.print("Ingrese el nombre del producto: ");
@@ -126,7 +126,7 @@ public class Inventory {
             double precioAnterior = producto.getPrecio();
             producto.setPrecio(nuevoPrecio);
             System.out.println("Precio actualizado correctamente.");
-            reporte.registrarCambio("Modificar Precio", categoria, nombreProducto,
+            reporteInventario.registrarCambio("Modificar Precio", categoria, nombreProducto,
                     "Precio anterior: $" + precioAnterior + ", Nuevo precio: $" + nuevoPrecio);
             alerta.verificarStockBajo(productosPorCategoria);
         } else {
@@ -135,7 +135,7 @@ public class Inventory {
     }
 
     // Método para eliminar un producto del inventario por su nombre y categoría
-    public void eliminarProducto(Scanner scanner, InventoryReport reporte) { 
+    public void eliminarProducto(Scanner scanner, InventoryReport reporteInventario) { 
         System.out.print("\nIngrese la categoría del producto: ");
         String categoria = scanner.nextLine();
         System.out.print("Ingrese el nombre del producto: ");
@@ -144,7 +144,7 @@ public class Inventory {
         List<Producto> productos = productosPorCategoria.get(categoria);
         if (productos != null && productos.removeIf(p -> p.getNombre().equalsIgnoreCase(nombreProducto))) {
             String detalle = "Retiro total: Producto eliminado del inventario.";
-            reporte.registrarCambio("Eliminar Producto", categoria, nombreProducto, detalle);
+            reporteInventario.registrarCambio("Eliminar Producto", categoria, nombreProducto, detalle);
             System.out.println("Producto eliminado correctamente.");
             alerta.verificarStockBajo(productosPorCategoria);
         } else {
@@ -153,7 +153,7 @@ public class Inventory {
     }
 
      // Método para eliminar una categoría y sus productos del inventario
-    public void eliminarCategoria(Scanner scanner, InventoryReport reporte) { 
+    public void eliminarCategoria(Scanner scanner, InventoryReport reporteInventario) { 
         System.out.print("\nIngrese el nombre de la categoría que desea eliminar: ");
         String categoria = scanner.nextLine();
 
@@ -210,12 +210,12 @@ public class Inventory {
         return productosPorCategoria;
     }
 
-    public void exportarInventario(File ficherocsv) {
-        this.ficherocsv.exportar(ficherocsv, productosPorCategoria);
+    public void exportarInventario(File FicheroCSV) {
+        this.ficherocsv.exportar(FicheroCSV, productosPorCategoria);
     }
 
-    public void importarInventario(File ficherocsv) {
-        this.ficherocsv.importar(ficherocsv, productosPorCategoria, this);
+    public void importarInventario(File FicheroCSV) {
+        this.ficherocsv.importar(FicheroCSV, productosPorCategoria, this);
     }
 }
 

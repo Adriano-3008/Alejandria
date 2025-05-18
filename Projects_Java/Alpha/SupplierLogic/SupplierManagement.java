@@ -5,12 +5,14 @@ import Alpha.Repositories.SupplierRepository;
 
 public class SupplierManagement{ // Clase para controlar los proveedores y sus operaciones (agregar, modificar, eliminar, listar, etc.)
     private List<Supplier> listSupplier = new ArrayList<>(); // Lista para almacenar los proveedores
-    private SupplierRepository supplierRepository;
+    private SupplierRepository repositorioProveedor;
 
     public SupplierManagement() { // Constructor de la clase ControlProveedores
-        this.supplierRepository = new SupplierRepository(); // Inicializa el repositorio de proveedores
-        supplierRepository.cargarProveedores();
-        this.listSupplier = supplierRepository.getListSupplier(); // Carga la lista de proveedores desde el archivo
+        this.repositorioProveedor = new SupplierRepository(); // Inicializa el repositorio de proveedores
+    }
+
+    public SupplierRepository getRepositorioProveedor() {
+        return repositorioProveedor;
     }
 
     public void agregarProveedor(Scanner scanner) { // Método para agregar un nuevo proveedor
@@ -24,7 +26,7 @@ public class SupplierManagement{ // Clase para controlar los proveedores y sus o
 
         Supplier supplier = new Supplier(nombre, contacto, productos);
         listSupplier.add(supplier);
-        supplierRepository.guardarProveedores(); // Guarda la lista de proveedores en el archivo
+        repositorioProveedor.guardarProveedores(); // Guardar los cambios en el archivo
         System.out.println("Proveedor registrado exitosamente.");
     }
 
@@ -67,7 +69,7 @@ public class SupplierManagement{ // Clase para controlar los proveedores y sus o
             supplier.setProductosSuministrados(nuevosProductos);
         }
 
-        supplierRepository.guardarProveedores(); // Guarda la lista de proveedores en el archivo
+        repositorioProveedor.guardarProveedores(); // Guarda la lista de proveedores en el archivo
         System.out.println("Proveedor modificado exitosamente.");
     }
 
@@ -80,7 +82,7 @@ public class SupplierManagement{ // Clase para controlar los proveedores y sus o
         Supplier supplier = buscarProveedor(nombre);
         if (supplier != null) {
             listSupplier.remove(supplier);
-            supplierRepository.guardarProveedores(); // Guarda la lista de proveedores en el archivo
+            repositorioProveedor.guardarProveedores(); // Guarda la lista de proveedores en el archivo
             System.out.println("Proveedor eliminado exitosamente.");
         } else {
             System.out.println("Proveedor no encontrado.");
@@ -93,5 +95,8 @@ public class SupplierManagement{ // Clase para controlar los proveedores y sus o
                 .findFirst()
                 .orElse(null);
     }
-   
+    public void cargarProveedores() {
+        repositorioProveedor.cargarProveedores();
+        listSupplier = repositorioProveedor.getListSupplier(); // Sincronizar la lista local con la del repositorio
+    }
 }

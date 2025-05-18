@@ -6,7 +6,7 @@ import Alpha.InventoryLogic.Inventory;
 import Alpha.InventoryLogic.InventoryReport;
 
 public class ReportMenu {
-     public static void showReportSubmenu(Scanner scanner, Inventory inventario, InventoryReport inventoryReport) { // Método para mostrar el menú de opciones de reportes 
+     public static void mostrarMenuReportes(Scanner scanner, Inventory inventario, InventoryReport reporteInventario) { // Método para mostrar el menú de opciones de reportes 
         boolean regresarAlMenu = false; 
         while (!regresarAlMenu) {
             System.out.println("\n=== REPORTES ===");
@@ -16,8 +16,8 @@ public class ReportMenu {
             System.out.print("Seleccione una opción: ");
             int opcionReporte = Integer.parseInt(scanner.nextLine());
             switch (opcionReporte) {
-                case 1 -> inventoryReport.generarReporte(inventario);
-                case 2 -> inventoryReport.mostrarRegistroDeCambios(scanner);
+                case 1 -> reporteInventario.generarReporte(inventario);
+                case 2 -> reporteInventario.mostrarRegistroDeCambios(scanner);
                 case 3 -> {
                     regresarAlMenu = true;
                     System.out.println("Regresando al menú principal...");

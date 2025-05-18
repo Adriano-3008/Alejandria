@@ -6,7 +6,7 @@ import Alpha.Validation;
 import Alpha.InventoryLogic.Inventory;
 
 public class SearchMenu {
-    public static void showSearchSubmenu(Scanner scanner, Inventory inventario) { // Método para mostrar el menú de opciones de búsqueda
+    public static void mostrarMenuBusqueda(Scanner scanner, Inventory inventario) { // Método para mostrar el menú de opciones de búsqueda
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== BÚSQUEDA EN INVENTARIO ===");

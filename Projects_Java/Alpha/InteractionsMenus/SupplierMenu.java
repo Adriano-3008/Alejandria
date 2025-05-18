@@ -5,7 +5,7 @@ import java.util.Scanner;
 import Alpha.SupplierLogic.SupplierManagement;
 
 public class SupplierMenu {
-    public static void showSupplierSubmenu(Scanner scanner, SupplierManagement supplierManagement) { // Método para mostrar el menú de opciones de gestión de proveedores
+    public static void mostrarMenuProovedores(Scanner scanner, SupplierManagement manejoUsuario) { // Método para mostrar el menú de opciones de gestión de proveedores
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== GESTIÓN DE PROVEEDORES ===");
@@ -16,9 +16,12 @@ public class SupplierMenu {
             System.out.print("Seleccione una opción: ");
             int opcionProveedores = Integer.parseInt(scanner.nextLine());
             switch (opcionProveedores) {
-                case 1 -> supplierManagement.mostrarProveedores();
-                case 2 -> supplierManagement.agregarProveedor(scanner);
-                case 3 -> supplierManagement.eliminarProveedor(scanner);
+                case 1 -> {
+                    manejoUsuario.cargarProveedores(); // Cargar proveedores antes de mostrarlos
+                    manejoUsuario.mostrarProveedores();
+                }
+                case 2 -> manejoUsuario.agregarProveedor(scanner);
+                case 3 -> manejoUsuario.eliminarProveedor(scanner);
                 case 4 -> {
                     regresarAlMenu = true;
                     System.out.println("Regresando al menú principal...");

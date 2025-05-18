@@ -3,10 +3,10 @@ package Alpha.UserLogic;
 import java.util.Scanner;
 
 public class UserAuthentication {
-    private final UserManagement userManagement;
+    private final UserManagement manejoUsuario;
 
-    public UserAuthentication(UserManagement userManagement) {
-        this.userManagement = userManagement;
+    public UserAuthentication(UserManagement manejoUsuario) {
+        this.manejoUsuario = manejoUsuario;
     }
 
     public String iniciarSesion(Scanner scanner) { // Método para iniciar sesión
@@ -17,9 +17,9 @@ public class UserAuthentication {
             System.out.print("Ingrese su contraseña: ");
             String contrasena = scanner.nextLine();
 
-            if (userManagement.getUsuarios().containsKey(usuario) &&
-                userManagement.getUsuarios().get(usuario).equals(contrasena)) {
-                if (userManagement.esUsuarioAdmin(usuario)) {
+            if (manejoUsuario.getUsuarios().containsKey(usuario) &&
+                manejoUsuario.getUsuarios().get(usuario).equals(contrasena)) {
+                if (manejoUsuario.esUsuarioAdmin(usuario)) {
                     System.out.println("Has iniciado sesión como administrador.");
                 } else {
                     System.out.println("¡Bienvenido, " + usuario + "!");

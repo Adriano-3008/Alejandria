@@ -7,8 +7,8 @@ import Alpha.InventoryManagementSystem;
 import Alpha.InventoryLogic.Inventory;
 import Alpha.InventoryLogic.InventoryReport;
 
-public class InventoryModificationMenu {
-    public static void showInventoryModificationSubmenu (Scanner scanner, Inventory inventario, InventoryReport inventoryReport) { // Método para mostrar el menú de opciones del inventario 
+public class InventoryModificationMenu{ // Clase para mostrar el menú de opciones de modificación del inventario
+    public static void mostrarMenuModificacionInventario (Scanner scanner, Inventory inventario, InventoryReport reporteInventario) { // Método para mostrar el menú de opciones del inventario 
         boolean regresarAlMenu = false;
         while (!regresarAlMenu) {
             System.out.println("\n=== MODIFICACIONES DE INVENTARIO ===");
@@ -25,11 +25,11 @@ public class InventoryModificationMenu {
             int opcionModificacion = Integer.parseInt(scanner.nextLine());
             switch (opcionModificacion) {
                 case 1 -> InventoryManagementSystem.agregarCategoria(scanner, inventario);
-                case 2 -> InventoryManagementSystem.agregarProductos(scanner, inventario, inventoryReport);
-                case 3 -> inventario.modificarCantidad(scanner, inventoryReport);
-                case 4 -> inventario.modificarPrecio(scanner, inventoryReport);
-                case 5 -> inventario.eliminarProducto(scanner, inventoryReport);
-                case 6 -> inventario.eliminarCategoria(scanner, inventoryReport);
+                case 2 -> InventoryManagementSystem.agregarProductos(scanner, inventario, reporteInventario);
+                case 3 -> inventario.modificarCantidad(scanner, reporteInventario);
+                case 4 -> inventario.modificarPrecio(scanner, reporteInventario);
+                case 5 -> inventario.eliminarProducto(scanner, reporteInventario);
+                case 6 -> inventario.eliminarCategoria(scanner, reporteInventario);
                 case 7 -> {
                     System.out.print("Ingrese el nombre del archivo CSV para exportar (por ejemplo, 'Alpha/Archivo_Proyecto/inventario.csv'): ");
                     String nombreArchivo = scanner.nextLine();
