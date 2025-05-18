@@ -1,8 +1,7 @@
-package Alpha;
+package Alpha.UserLogic;
 
-import java.io.*; // Import necesario para trabajar con archivos y flujos de entrada/salida de datos (I/O)
-
-import java.util.*; // Import necesario para trabajar con colecciones y Scanner
+import java.util.*; 
+import Alpha.Repositories.UserRepository;
 
 public class UserManagement { // Clase para manejar el registro y autenticación de usuarios en el sistema
 
@@ -25,9 +24,6 @@ public class UserManagement { // Clase para manejar el registro y autenticación
     public Map<String, String> getUsuarios() { // Método para obtener el mapa de usuarios
         return usuarios;
     }
-
-    
-
     
     public void registrarUsuario(Scanner scanner) { // Método para registrar un nuevo usuario en el sistema
         System.out.println("\n=== REGISTRO DE NUEVO USUARIO ===");
@@ -152,91 +148,5 @@ public class UserManagement { // Clase para manejar el registro y autenticación
 
     public boolean esUsuarioAdmin(String usuario) { // Método para verificar si un usuario es administrador
         return jerarquiaUsuarios.getOrDefault(usuario, false);
-    }
-}
-
-/*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
- /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
- /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-class UserAuthentication {
-    private final UserManagement userManagement;
-
-    public UserAuthentication(UserManagement userManagement) {
-        this.userManagement = userManagement;
-    }
-
-    public String iniciarSesion(Scanner scanner) { // Método para iniciar sesión
-        while (true) {
-            System.out.println("\n=== LOGIN ===");
-            System.out.print("Ingrese su nombre de usuario: ");
-            String usuario = scanner.nextLine();
-            System.out.print("Ingrese su contraseña: ");
-            String contrasena = scanner.nextLine();
-
-            if (userManagement.getUsuarios().containsKey(usuario) &&
-                userManagement.getUsuarios().get(usuario).equals(contrasena)) {
-                if (userManagement.esUsuarioAdmin(usuario)) {
-                    System.out.println("Has iniciado sesión como administrador.");
-                } else {
-                    System.out.println("¡Bienvenido, " + usuario + "!");
-                }
-                return usuario;
-            } else {
-                System.out.println("Usuario o contraseña incorrectos. Intente nuevamente.");
-            }
-        }
-    }
-}
-
- /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
- /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
- /*--------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-class UserRepository {
-    private final File archivoUsuarios = new File("Projects_Java/Archivo_Proyecto_Alpha/.dats/Archivo_Usuarios.dat"); // Ruta del archivo para almacenar los usuarios
-    private Map<String, String> usuarios = new HashMap<>();
-    private Map<String, Boolean> jerarquiaUsuarios = new HashMap<>();
-
-    public UserRepository() {
-        cargarUsuarios();
-    }
-
-    @SuppressWarnings("unchecked")
-    public void cargarUsuarios() {
-        if (!archivoUsuarios.exists()) {
-            try {
-                archivoUsuarios.getParentFile().mkdirs();
-                archivoUsuarios.createNewFile();
-                System.out.println("El archivo de usuarios no existía. Se ha creado un nuevo archivo.");
-            } catch (IOException e) {
-                System.out.println("Error al crear el archivo de usuarios: " + e.getMessage());
-            }
-            return;
-        }
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(archivoUsuarios))) {
-            usuarios = (Map<String, String>) ois.readObject();
-            jerarquiaUsuarios = (Map<String, Boolean>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error al cargar los usuarios: " + e.getMessage());
-        }
-    }
-
-    public void guardarUsuarios() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivoUsuarios))) {
-            oos.writeObject(usuarios);
-            oos.writeObject(jerarquiaUsuarios);
-        } catch (IOException e) {
-            System.out.println("Error al guardar los usuarios: " + e.getMessage());
-        }
-    }
-
-    public Map<String, String> getUsuarios() {
-        return usuarios;
-    }
-
-    public Map<String, Boolean> getJerarquiaUsuarios() {
-        return jerarquiaUsuarios;
     }
 }
