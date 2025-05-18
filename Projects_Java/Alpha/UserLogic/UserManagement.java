@@ -2,6 +2,7 @@ package Alpha.UserLogic;
 
 import java.util.*; 
 import Alpha.Repositories.UserRepository;
+import Alpha.Validation;
 
 public class UserManagement { // Clase para manejar el registro y autenticación de usuarios en el sistema
 
@@ -27,24 +28,19 @@ public class UserManagement { // Clase para manejar el registro y autenticación
     
     public void registrarUsuario(Scanner scanner) { // Método para registrar un nuevo usuario en el sistema
         System.out.println("\n=== REGISTRO DE NUEVO USUARIO ===");
-        System.out.print("Ingrese un nombre de usuario: ");
-        String usuario = scanner.nextLine();
-
+        String usuario = Validation.leerTextoNoVacio(scanner, "El nombre de usuario no puede estar vacío.");
         if (usuarios.containsKey(usuario)) {
             System.out.println("El usuario ya existe. Intente con otro nombre.");
             return;
         }
 
-        System.out.print("Ingrese una contraseña: ");
-        String contrasena = scanner.nextLine();
-
+        String contrasena = Validation.leerTextoNoVacio(scanner, "La contraseña no puede estar vacía.");
         System.out.print("¿Desea establecer esta cuenta como administrador? (s/n): ");
         String respuesta = scanner.nextLine();
 
         boolean esAdmin = false;
         if (respuesta.equalsIgnoreCase("s")) {
-            System.out.print("Ingrese la contraseña de administrador: ");
-            String credencialesAdmin = scanner.nextLine();
+            String credencialesAdmin = Validation.leerTextoNoVacio(scanner, "La contraseña de administrador no puede estar vacía.");
             if ("admin2025".equals(credencialesAdmin)) {
                 esAdmin = true;
                 System.out.println("Cuenta registrada como administrador.");
@@ -55,7 +51,7 @@ public class UserManagement { // Clase para manejar el registro y autenticación
 
         usuarios.put(usuario, contrasena);
         jerarquiaUsuarios.put(usuario, esAdmin);
-        repositorioUsuario.guardarUsuarios(); // Guardar los cambios en el archivo
+        repositorioUsuario.guardarUsuarios();
         System.out.println("Usuario registrado exitosamente.");
     }
 

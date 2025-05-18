@@ -1,0 +1,139 @@
+<diagram program="umletino" version="15.1"><zoom_level>8</zoom_level><help_text></help_text><element><id>UMLClass</id><coordinates><x>712</x><y>768</y><w>488</w><h>104</h></coordinates><panel_attributes>InventoryManagementSystem
+--
++ main(args : String[]) : void
++ manejarLogin(scanner : Scanner, manejoUsuario : UserManagement) : String
++ mostrarMenu(esAdmin : boolean) : void
++ procesarOpcion(...) : boolean
++ agregarCategoria(scanner : Scanner, inventario : Inventory) : void
++ agregarProductos(scanner : Scanner, inventario : Inventory, reporteInventario : InventoryReport) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1320</x><y>784</y><w>336</w><h>64</h></coordinates><panel_attributes>Validation
+--
++ leerEnteroPositivo(scanner : Scanner, mensajeError : String) : int
++ leerDoublePositivo(scanner : Scanner, mensajeError : String) : double
++ leerTextoNoVacio(scanner : Scanner, mensajeError : String) : String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1336</x><y>280</y><w>248</w><h>56</h></coordinates><panel_attributes>MainMenu
+--
++ mostrarMenuPrincipal(esAdmin : boolean) : void
++ procesarOpcion(...) : boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1256</x><y>104</y><w>352</w><h>40</h></coordinates><panel_attributes>SearchMenu
+--
++ mostrarMenuBusqueda(scanner : Scanner, inventario : Inventory) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1680</x><y>112</y><w>584</w><h>40</h></coordinates><panel_attributes> InventoryModificationMenu
+--
++ mostrarMenuModificacionInventario(scanner : Scanner, inventario : Inventory, reporteInventario : InventoryReport) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1440</x><y>32</y><w>512</w><h>48</h></coordinates><panel_attributes>ReportMenu
+--
++ mostrarMenuReportes(scanner : Scanner, inventario : Inventory, reporteInventario : InventoryReport) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>904</x><y>40</y><w>448</w><h>40</h></coordinates><panel_attributes>SupplierMenu
+--
++ mostrarMenuProovedores(scanner : Scanner, manejoUsuario : SupplierManagement) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>752</x><y>448</y><w>392</w><h>248</h></coordinates><panel_attributes>Inventory
+--
+- productosPorCategoria : Map&lt;String, List&lt;Producto&gt;&gt;
+- alerta : StockAlert
+- ficherocsv : FileCSV
+-
++ agregarProducto(producto : Producto) : void
++ existeCategoria(categoria : String) : boolean
++ agregarCategoria(categoria : String) : void
++ mostrarInventario() : void
++ buscarProducto(categoria : String, nombreProducto : String) : Producto
++ modificarCantidad(scanner : Scanner, reporteInventario : InventoryReport) : void
++ modificarPrecio(scanner : Scanner, reporteInventario : InventoryReport) : void
++ eliminarProducto(scanner : Scanner, reporteInventario : InventoryReport) : void
++ eliminarCategoria(scanner : Scanner, reporteInventario : InventoryReport) : void
++ buscarPorNombre(nombreProducto : String) : void
++ buscarPorCategoria(categoria : String) : void
++ cargarInventario(repositorioInventario : InventoryRepository) : void
++ guardarInventario(repositorioInventario : InventoryRepository) : void
++ exportarInventario(FicheroCSV : File) : void
++ importarInventario(FicheroCSV : File) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>408</x><y>248</y><w>392</w><h>40</h></coordinates><panel_attributes>StockAlert
+--
++ verificarStockBajo(productosPorCategoria : Map&lt;String, List&lt;Producto&gt;&gt;) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>560</x><y>144</y><w>512</w><h>56</h></coordinates><panel_attributes>FileCSV
+--
++ exportar(ficherocsv : File, productosPorCategoria : Map&lt;String, List&lt;Producto&gt;&gt;) : void
++ importar(ficherocsv : File, productosPorCategoria : Map&lt;String, List&lt;Producto&gt;&gt;, inventario : Inventory) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>240</x><y>312</y><w>272</w><h>128</h></coordinates><panel_attributes>InventoryReport
+--
+- ficheroHistorial : File
+- registroDeCambios : List&lt;String&gt;
+-
++ registrarCambio(...) : void
++ mostrarRegistroDeCambios(scanner : Scanner) : void
++ borrarHistorial() : void
++ guardarHistorial() : void
++ cargarHistorial() : void
++ generarReporte(inventario : Inventory) : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>840</x><y>944</y><w>264</w><h>144</h></coordinates><panel_attributes>UserManagement
+--
+- repositorioUsuario : UserRepository
+- usuarios : Map&lt;String, String&gt;
+- jerarquiaUsuarios : Map&lt;String, Boolean&gt;
+- userAuthentication : UserAuthentication
++ registrarUsuario(scanner : Scanner) : void
++ borrarUsuario(scanner : Scanner) : void
++ manejarLogin(scanner : Scanner) : String
++ manejarUsuariosRegistrados(scanner : Scanner) : void
++ verUsuariosRegistrados() : void
++ esUsuarioAdmin(usuario : String) : boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1184</x><y>984</y><w>224</w><h>56</h></coordinates><panel_attributes>UserAuthentication
+--
+- manejoUsuario : UserManagement
++ iniciarSesion(scanner : Scanner) : String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>848</x><y>1144</y><w>248</w><h>120</h></coordinates><panel_attributes>UserRepository
+--
+- archivoUsuarios : File
+- usuarios : Map&lt;String, String&gt;
+- jerarquiaUsuarios : Map&lt;String, Boolean&gt;
+-
++ cargarUsuarios() : void
++ guardarUsuarios() : void
++ getUsuarios() : Map&lt;String, String&gt;
++ getJerarquiaUsuarios() : Map&lt;String, Boolean&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>384</x><y>744</y><w>240</w><h>144</h></coordinates><panel_attributes>SupplierManagement
+--
+- listSupplier : List&lt;Supplier&gt;
+- repositorioProveedor : SupplierRepository
+-
++ agregarProveedor(scanner : Scanner) : void
++ listarProveedores() : void
++ mostrarProveedores() : void
++ modificarProveedor(scanner : Scanner) : void
++ eliminarProveedor(scanner : Scanner) : void
++ buscarProveedor(nombre : String) : Supplier
++ cargarProveedores() : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>520</y><w>328</w><h>144</h></coordinates><panel_attributes>Supplier
+--
+- nombre : String
+- contacto : String
+- productosSuministrados : String
+-
++ getNombre() : String
++ setNombre(nombre : String) : void
++ getContacto() : String
++ setContacto(contacto : String) : void
++ getProductosSuministrados() : String
++ setProductosSuministrados(productosSuministrados : String) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>80</x><y>752</y><w>176</w><h>96</h></coordinates><panel_attributes>SupplierRepository
+--
+- ficheroProveedores : File
+- listSupplier : List&lt;Supplier&gt;
+-
++ cargarProveedores() : void
++ guardarProveedores() : void
++ getListSupplier() : List&lt;Supplier&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>912</x><y>264</y><w>384</w><h>72</h></coordinates><panel_attributes>InventoryRepository
+--
+- ficheroInventario : File
+-
++ cargarInventario() : Map&lt;String, List&lt;Producto&gt;&gt;
++ guardarInventario(productosPorCategoria : Map&lt;String, List&lt;Producto&gt;&gt;) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>944</x><y>688</y><w>24</w><h>96</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;100;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1152</x><y>72</y><w>240</w><h>224</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>280;260;280;160;10;160;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1424</x><y>136</y><w>24</w><h>160</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;180;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>944</x><y>328</y><w>184</w><h>136</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;150;10;70;210;70;210;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1480</x><y>72</y><w>200</w><h>224</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;260;10;160;230;160;230;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1528</x><y>144</y><w>488</w><h>152</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;170;10;110;590;110;590;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1088</x><y>328</y><w>384</w><h>136</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;150;10;100;460;100;460;10</additional_attributes></element><element><id>Relation</id><coordinates><x>808</x><y>192</y><w>24</w><h>272</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;320;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>632</x><y>280</y><w>136</w><h>232</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>150;260;10;260;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>384</x><y>432</y><w>384</w><h>144</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>460;150;10;150;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1136</x><y>528</y><w>176</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;200;10</additional_attributes></element><element><id>Relation</id><coordinates><x>960</x><y>1080</y><w>40</w><h>80</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>Relation</id><coordinates><x>952</x><y>864</y><w>24</w><h>96</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>1088</x><y>1032</y><w>240</w><h>192</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>260;10;260;220;10;220</additional_attributes></element><element><id>Relation</id><coordinates><x>1096</x><y>1000</y><w>104</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;110;10</additional_attributes></element><element><id>Relation</id><coordinates><x>616</x><y>816</y><w>112</w><h>32</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>120;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>320</x><y>592</y><w>200</w><h>168</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>230;190;230;10;190;10;230;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1192</x><y>808</y><w>144</w><h>32</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>10;10;160;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1136</x><y>656</y><w>360</w><h>144</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>10;10;430;10;430;160</additional_attributes></element><element><id>Relation</id><coordinates><x>504</x><y>840</y><w>1000</w><h>456</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>10;60;10;550;1230;550;1230;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1400</x><y>8</y><w>928</w><h>824</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>10;120;10;10;1140;10;1140;340;360;340;360;1010;320;1010</additional_attributes></element><element><id>Relation</id><coordinates><x>1128</x><y>0</y><w>1208</w><h>840</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>10;50;10;10;1490;10;1490;360;710;360;710;1030;660;1030</additional_attributes></element><element><id>Relation</id><coordinates><x>248</x><y>792</y><w>152</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>170;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1648</x><y>16</y><w>672</w><h>808</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..n</panel_attributes><additional_attributes>440;120;440;10;820;10;820;320;40;320;40;990;10;990</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1296</x><y>456</y><w>136</w><h>152</h></coordinates><panel_attributes>Producto
+--
+- nombre : String
+- categoria : String
+- cantidad : int
+- precio : double
+-
++ getNombre() : String
++ getCategoria() : String
++ getCantidad() : int
++ setCantidad(cantidad : int) : void
++ getPrecio() : double
++ setPrecio(precio : double) : void</panel_attributes><additional_attributes></additional_attributes></element></diagram>

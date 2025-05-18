@@ -17,16 +17,13 @@ public class SupplierManagement{ // Clase para controlar los proveedores y sus o
 
     public void agregarProveedor(Scanner scanner) { // Método para agregar un nuevo proveedor
         System.out.println("\n=== REGISTRAR NUEVO PROVEEDOR ===");
-        System.out.print("Ingrese el nombre del proveedor: ");
         String nombre = Validation.leerTextoNoVacio(scanner, "El nombre no puede estar vacío.");
-        System.out.print("Ingrese el contacto del proveedor: ");
         String contacto = Validation.leerTextoNoVacio(scanner, "El contacto no puede estar vacío.");
-        System.out.print("Ingrese los productos suministrados por el proveedor: ");
         String productos = Validation.leerTextoNoVacio(scanner, "Los productos no pueden estar vacíos.");
 
         Supplier supplier = new Supplier(nombre, contacto, productos);
         listSupplier.add(supplier);
-        repositorioProveedor.guardarProveedores(); // Guardar los cambios en el archivo
+        repositorioProveedor.guardarProveedores();
         System.out.println("Proveedor registrado exitosamente.");
     }
 

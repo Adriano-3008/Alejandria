@@ -13,22 +13,17 @@ public class SearchMenu {
             System.out.println("1. Buscar productos por categoría");
             System.out.println("2. Buscar producto por nombre");
             System.out.println("3. Regresar al menú principal");
-            System.out.print("Seleccione una opción: ");
-            int opcionBusqueda = Integer.parseInt(scanner.nextLine());
+            int opcionBusqueda = Validation.leerEnteroPositivo(scanner, "Seleccione una opción válida.");
             switch (opcionBusqueda) {
                 case 1 -> {
-                    System.out.print("Ingrese la categoría a buscar: ");
-                    inventario.buscarPorCategoria(scanner.nextLine());
+                    String categoria = Validation.leerTextoNoVacio(scanner, "La categoría no puede estar vacía.");
+                    inventario.buscarPorCategoria(categoria);
                 }
                 case 2 -> {
-                    System.out.print("Ingrese el nombre del producto a buscar: ");
-                    String nombreProducto = Validation.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
+                    String nombreProducto = Validation.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío.");
                     inventario.buscarPorNombre(nombreProducto);
                 }
-                case 3 -> {
-                    regresarAlMenu = true;
-                    System.out.println("Regresando al menú principal...");
-                }
+                case 3 -> regresarAlMenu = true;
                 default -> System.out.println("Opción no válida.");
             }
         }

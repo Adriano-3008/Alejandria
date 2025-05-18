@@ -88,22 +88,19 @@ public class Inventory {
 
      // Método para modificar la cantidad de un producto en el inventario por su nombre y categoría
     public void modificarCantidad(Scanner scanner, InventoryReport reporteInventario) {
-        System.out.print("\nIngrese la categoría del producto: ");
-        String categoria = Validation.leerTextoNoVacio(scanner, "La categoría no puede estar vacía. Intente nuevamente.");
-        System.out.print("Ingrese el nombre del producto: ");
-        String nombreProducto = Validation.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío. Intente nuevamente.");
-    
+        String categoria = Validation.leerTextoNoVacio(scanner, "La categoría no puede estar vacía.");
+        String nombreProducto = Validation.leerTextoNoVacio(scanner, "El nombre del producto no puede estar vacío.");
+
         Producto producto = buscarProducto(categoria, nombreProducto);
         if (producto != null) {
-            System.out.print("Ingrese la nueva cantidad: ");
             int nuevaCantidad = Validation.leerEnteroPositivo(scanner, "Ingrese un número válido para la cantidad.");
             int cantidadAnterior = producto.getCantidad();
             producto.setCantidad(nuevaCantidad);
-    
+
             String detalle = nuevaCantidad > cantidadAnterior
                     ? "Nueva cantidad mayor: Ingreso de " + (nuevaCantidad - cantidadAnterior) + " unidades."
                     : "Nueva cantidad menor: Retiro de " + (cantidadAnterior - nuevaCantidad) + " unidades.";
-    
+
             reporteInventario.registrarCambio("Modificar Cantidad", categoria, nombreProducto, detalle);
             System.out.println("Cantidad actualizada correctamente.");
             alerta.verificarStockBajo(productosPorCategoria);
